@@ -23,6 +23,6 @@ def create_subfolders(project_name, num_of_iteration, plot_or_text):
 	pathlib.Path(subfolder).mkdir(parents=True, exist_ok=True)
 	return(subfolder)
 	
-create_folder('zkouska')
-create_subfolders('zkouska',1,'plot')
-create_subfolders('zkouska',2,'plot')
+#create_folder('zkouska')
+#create_subfolders('zkouska',1,'plot')
+#create_subfolders('zkouska',2,'plot')

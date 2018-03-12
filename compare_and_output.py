@@ -35,23 +35,30 @@ def compare_and_output(infilename_pdb, infilename_bcr, rots_count, best_fits_cou
 	#new_corsum_min = old_corsum_min - 2 #for first and second cycle float_info.max returns highest available floating point number)
 	list_of_all_rots = []
 	create_folder(project_name)
+	a = 0
 	while (a < 1):
 		subfolder = create_subfolders(project_name, num_of_iter, "textfiles")
 		subfolder_plot = create_subfolders(project_name, num_of_iter, "graphs")
 		#best_fit, pi_mult, new_corsum_min, new_corsum_min_index, old_corsum_min, all_rots, cor_sums, matrices_of_diffs = best_fit_find(best_fit, bcr_header, bcr_array, new_corsum_min, old_corsum_min, rots_count, pi_mult)
-		axisangles, cor_sums, diff_matrices = align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count, pi_mult)
-		np.argsort(a)[::1][:heapq.nsmallest(best_fits_count, cor_sums)] #do this after lunch
-		best_fits = heapq.nsmallest(best_fits_count, cor_sums)
-		with open(os.path.join(subfolder, "{}_{}_text_output.txt".format(project_name, num_of_iter)), mode="w+", encoding='utf-8') as textoutput:
-			for i in range(0, len(all_rots)):
-				textoutput.write("score:{}_coordinates:{} \n".format(cor_sums[i], all_rots[i]))
-				textoutput.write("-----------------------------\n best_score:{}, line: {}".format(new_corsum_min, new_corsum_min_index + 1))
-		for j in range(0, len(all_rots)):
-			draw_points(bcr_array, best_fit, matrices_of_diffs[j], j, num_of_iter, subfolder, cor_sums[j])	
-		num_of_iter = num_of_iter + 1
-		print(num_of_iter)
-		if (num_of_iter == 10):
-			exit()		
-		return(best_fit, new_corsum_min)
+		axisangles, cor_sums, diff_matrices = align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult)
+		#np.argsort(a)[::1][:heapq.nsmallest(best_fits_count, cor_sums)] #do this after lunch
+		#best_fits = heapq.nsmallest(best_fits_count, cor_sums)
+		best_fits = np.argsort(a)[::1][:best_fits_count]
+		with open(os.path.join(subfolder, "{}_text_output.txt".format(project_name)), mode="w+", encoding='utf-8') as textoutput:
+			ind_best = 0
+			for i in range(0, len(best_fits)):
+				ind_best = best_fits[i]
+				textoutput.write("score:{}_coordinates:{} \n".format(cor_sums[ind_best], axisangles[ind_best]))
+		#textoutput.write("-----------------------------\n best_score:{}, line: {}".format(new_corsum_min, new_corsum_min_index + 1))
+		#for j in range(0, len(all_rots)):
+		#draw_points(bcr_array, best_fit, matrices_of_diffs[j], j, num_of_iter, subfolder, cor_sums[j])	
+		#num_of_iter = num_of_iter + 1
+		#print(num_of_iter)
+		#if (num_of_iter == 10):
+		#exit()		
+		#return(best_fit, new_corsum_min)
+		a += 1 
+		return()
+
 
 #graphs_and_textfiles('input_files/1hzh.pdb','input_files/1012_1.bcr', 10, 'myprojectnm5') 
