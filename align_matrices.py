@@ -34,7 +34,7 @@ def check_surrounding(matrix):
 #uprav navratovu hodnotu
 
 def align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult):
-	pdb_matrices, list_of_all_rots = pdb_rots_to_bins(coor_list, bcr_header, rots_count, pi_mult)	
+	pdb_matrices, list_of_all_rots, list_of_axisanles = pdb_rots_to_bins(coor_list, bcr_header, rots_count, pi_mult)	
 	#print("Aligning pdb matrices to bcr. This may take some time (or freez/crash computer)")
 	#all_rots = pdb_rots_to_bins(infilename_pdb, infilename_bcr)
 	#bcr_array = read_bcr_bin(infilename_bcr)
@@ -45,20 +45,24 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult):
 	matrices_of_diffs = []
 	if (check_surrounding(bcr_array) == 1):
 		print("Structure has more highest points- results can be distorted")
-	for i in range(0,len(pdb_matrices)): #iterate trough list of matrices 
-		pdb_array_shape, pdb_array, ind_max_value_pdb, max_val_pdb = find_highest_point(pdb_matrices[i]) # 
+	for k in range(0,len(pdb_matrices)): #iterate trough list of matrices 
+		pdb_array_shape, pdb_array, ind_max_value_pdb, max_val_pdb = find_highest_point(pdb_matrices[k]) # 
 		x_max_pdb, y_max_pdb = ind_max_value_pdb
 		x_hp_dist = x_max_bcr - x_max_pdb 
 		y_hp_dist = y_max_bcr - x_max_pdb #distances between indices of highest points
 		new_pdb_array = np.zeros((bcr_array_shape[0],bcr_array_shape[1])) #new pdb array with shape of bcr array 
 		diff_matrix = np.copy(new_pdb_array)
 		kor_sum = 0 # set kor_sum to zero and empty shape of 
-		for i in range(0, pdb_array_shape[0]): 
-			for j in range(0, pdb_array_shape[1]):
-				try:
+		try:
+			for i in range(0, pdb_array_shape[0]): 
+				for j in range(0, pdb_array_shape[1]):
 					new_pdb_array[i+x_hp_dist][j+y_hp_dist] = pdb_array[i][j] 
-				except IndexError:
-					aligned_matrices.append()
+		except IndexError:
+			#aligned_matrices.append("Out of range")
+			pdb_matrices.remove(pdb_matrices[k])
+			list_of_all_rots.remove(pdb_matrices[k])
+			list_of_axisangles.remove(list_of_axisangles[k])
+			continue
 		aligned_matrices.append(new_pdb_array + (max_val_bcr - max_val_pdb))
 		for i in range(0, bcr_array_shape[0]):
 			for j in range(0, bcr_array_shape[1]):
@@ -70,7 +74,7 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult):
 		#print(pdb_array)
 	#print(bcr_array)
 	print("Aligning pdb matrices to bcr. This may take some time (or freez/crash computer)")
-	return(list_of_all_rots, korel_sums, matrices_of_diffs)
+	return(list_of_axisanles, korel_sums, matrices_of_diffs)
 	#return(all_rots[0:2])
 
 #print(align_matrices('pyramid.pdb','pyramid.npy'))
