@@ -4,18 +4,19 @@ import getpass
 import pathlib
 
 def create_folder(project_name):
-	project_dir = os.path.join(os.path.expanduser('~'), 'pdb_afm_docker', project_name)
+	project_dir = os.path.join(os.path.expanduser('~'),'pdb_afm_docker',project_name)
 	proj_directory = pathlib.Path(project_dir)
 	if (proj_directory.exists()):
 		#while (projec_directory.exists())
 		#new_proj_check = input("Directory already exists. Enter another name or delete folder")
-		print("Directory already exists. Enter another name or delete folder")
+		#print("Directory already exists. Enter another name or delete folder")
 		return(1)
-		exit()
+		#exit()
 	else:
 		pathlib.Path(project_dir).mkdir(parents=True, exist_ok=True) 
 		return(0)
 
+create_folder("precotodopicenejde")
 def create_subfolders(project_name, num_of_iteration, plot_or_text):
 	project_dir = os.path.join(os.path.expanduser('~'), 'pdb_afm_docker', project_name)
 	iter_folder = '{}_iter_{}_{}'.format(project_name, num_of_iteration, plot_or_text)

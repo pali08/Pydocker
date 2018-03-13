@@ -43,12 +43,13 @@ def compare_and_output(infilename_pdb, infilename_bcr, rots_count, best_fits_cou
 		axisangles, cor_sums, diff_matrices = align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult)
 		#np.argsort(a)[::1][:heapq.nsmallest(best_fits_count, cor_sums)] #do this after lunch
 		#best_fits = heapq.nsmallest(best_fits_count, cor_sums)
+		print(axisangles)
 		best_fits = np.argsort(a)[::1][:best_fits_count]
 		with open(os.path.join(subfolder, "{}_text_output.txt".format(project_name)), mode="w+", encoding='utf-8') as textoutput:
 			ind_best = 0
 			for i in range(0, len(best_fits)):
 				ind_best = best_fits[i]
-				textoutput.write("score:{}_coordinates:{} \n".format(cor_sums[ind_best], axisangles[ind_best]))
+				textoutput.write("score:{}  coordinates:{} \n".format(cor_sums[i], axisangles[i][0])) #TODO after lunch
 		#textoutput.write("-----------------------------\n best_score:{}, line: {}".format(new_corsum_min, new_corsum_min_index + 1))
 		#for j in range(0, len(all_rots)):
 		#draw_points(bcr_array, best_fit, matrices_of_diffs[j], j, num_of_iter, subfolder, cor_sums[j])	
