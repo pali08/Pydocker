@@ -47,14 +47,15 @@ def fill_coord_lists(prot_matrix): # protein matrix bcr a pdb
 
 
 
-def draw_points(bcr_matrix, pdb_matrix, diff_matrix, num_of_graph, num_of_iter, subfolder, score):
+def draw_points(diff_matrix, num_of_graph, subfolder, score):
 	plt.switch_backend('TkAgg') #default backend is 'agg' and it can only draw png file. I use 'Qt4Agg' for interactive 3D graph. 
 	
-	x_ar_bcr, y_ar_bcr, z_ar_bcr = fill_coord_lists(bcr_matrix)
+	#x_ar_bcr, y_ar_bcr, z_ar_bcr = fill_coord_lists(bcr_matrix)
 	
-	x_ar_pdb, y_ar_pdb, z_ar_pdb = fill_coord_lists(pdb_matrix)
+	#x_ar_pdb, y_ar_pdb, z_ar_pdb = fill_coord_lists(pdb_matrix)
     
 	fig = plt.figure(1)
+	'''
 	ax = fig.add_subplot(211, projection='3d')
 	 
 	ax.scatter(x_ar_bcr, y_ar_bcr, z_ar_bcr, color='red')
@@ -64,11 +65,13 @@ def draw_points(bcr_matrix, pdb_matrix, diff_matrix, num_of_graph, num_of_iter, 
 	ax.set_ylabel('Y Label')
 	ax.set_zlabel('Z Label')
 	ax.set_title('Correlation score is {}'.format(score))
+	'''
 	#and now second graph: matrix of differences
-	ax2 = fig.add_subplot(212)
+	ax2 = fig.add_subplot(211)
+	ax2.set_title('Correlation score is {}'.format(score))
 	ax2.imshow(diff_matrix)
 
-	graph = os.path.join(subfolder, "{}_iter_{}_graph_{}.png".format(os.path.split(subfolder)[1], num_of_iter, num_of_graph))
+	graph = os.path.join(subfolder, "{}_graph_{}.png".format(os.path.split(subfolder)[1], num_of_graph))
 
 	plt.savefig(graph)
 	plt.close()

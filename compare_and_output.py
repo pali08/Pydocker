@@ -30,36 +30,23 @@ def compare_and_output(infilename_pdb, infilename_bcr, rots_count, best_fits_cou
 	pi_mult = 2
 	coor_list = read_pdb(infilename_pdb)[1]
 	best_fit = coor_list # in first cykle, best fit is default rotation
-	#all_rots, cor_sums = align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult)	
-	#old_corsum_min = 5000000000000.0 
-	#new_corsum_min = old_corsum_min - 2 #for first and second cycle float_info.max returns highest available floating point number)
 	list_of_all_rots = []
 	create_folder(project_name)
-	a = 0
-	while (a < 1):
-		subfolder = create_subfolders(project_name, num_of_iter, "textfiles")
-		subfolder_plot = create_subfolders(project_name, num_of_iter, "graphs")
-		#best_fit, pi_mult, new_corsum_min, new_corsum_min_index, old_corsum_min, all_rots, cor_sums, matrices_of_diffs = best_fit_find(best_fit, bcr_header, bcr_array, new_corsum_min, old_corsum_min, rots_count, pi_mult)
-		axisangles, cor_sums, diff_matrices = align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult)
-		#np.argsort(a)[::1][:heapq.nsmallest(best_fits_count, cor_sums)] #do this after lunch
-		#best_fits = heapq.nsmallest(best_fits_count, cor_sums)
-		print(axisangles)
-		best_fits = np.argsort(a)[::1][:best_fits_count]
-		with open(os.path.join(subfolder, "{}_text_output.txt".format(project_name)), mode="w+", encoding='utf-8') as textoutput:
-			ind_best = 0
-			for i in range(0, len(best_fits)):
-				ind_best = best_fits[i]
-				textoutput.write("score:{}  coordinates:{} \n".format(cor_sums[i], axisangles[i][0])) #TODO after lunch
-		#textoutput.write("-----------------------------\n best_score:{}, line: {}".format(new_corsum_min, new_corsum_min_index + 1))
-		#for j in range(0, len(all_rots)):
-		#draw_points(bcr_array, best_fit, matrices_of_diffs[j], j, num_of_iter, subfolder, cor_sums[j])	
-		#num_of_iter = num_of_iter + 1
-		#print(num_of_iter)
-		#if (num_of_iter == 10):
-		#exit()		
-		#return(best_fit, new_corsum_min)
-		a += 1 
-		return()
+	subfolder = create_subfolders(project_name, num_of_iter, "textfiles")
+	subfolder_plot = create_subfolders(project_name, num_of_iter, "graphs")
+	axisangles, cor_sums, diff_matrices = align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult)
+	print(axisangles)
+	print(cor_sums)
+	print(len(diff_matrices))
+	best_fits = np.argsort(cor_sums)[::1][:best_fits_count]
+	print(best_fits)
+	with open(os.path.join(subfolder, "{}_text_output.txt".format(project_name)), mode="w+", encoding='utf-8') as textoutput:
+		ind_best = 0
+		for i in range(0, len(best_fits)):
+			ind_best = best_fits[i]
+			textoutput.write("score:{}  axis{}  angle:{}  \n".format(cor_sums[ind_best],axisangles[ind_best][0:3],axisangles[ind_best][3])) 
+			draw_points(diff_matrices[ind_best],i,subfolder_plot,cor_sums[ind_best])
+	return(0)
 
 
 #graphs_and_textfiles('input_files/1hzh.pdb','input_files/1012_1.bcr', 10, 'myprojectnm5') 

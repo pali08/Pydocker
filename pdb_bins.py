@@ -116,7 +116,7 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, pi_mult):
 	#print("Creating 2D matrices from bcr file")
 	#bcr_header = read_bcr_header(infilename_bcr)
 	if (bcr_header['xlength']/bcr_header['xpixels'] - bcr_header['ylength']/bcr_header['ypixels'] < 0.0001) and (not(set(("xunit" and "yunit" and "zunit")).issubset(bcr_header))):
-		bin_size = ((bcr_header['xlength']/bcr_header['xpixels']) * 10) # nanometer to angstrom 
+		bin_size = ((bcr_header['xlength']/bcr_header['xpixels'])) 
 	rots_list, axisangle_list = create_rots(rots_count, pi_mult ,coor_list)
 	pdb_matrices = []
 	for i in range(0, len(rots_list)):

@@ -42,7 +42,8 @@ def read_bcr_bin(infilename):
 		bcr_array = np.fromfile(bcr_bin, dtype=np.int16)
 		for i in range(0,len(bcr_array)):
 			float(bcr_array[i])
-		bcr_array = header_dict["bit2nm"] * np.flipud(np.reshape(bcr_array, (header_dict["xpixels"], header_dict["ypixels"])))
+		#bcr_array = header_dict["bit2nm"] * np.flipud(np.reshape(bcr_array, (header_dict["xpixels"], header_dict["ypixels"])))
+		bcr_array = header_dict["bit2nm"] * (np.reshape(bcr_array, (header_dict["xpixels"], header_dict["ypixels"])))
 	return(bcr_array)
 
 
