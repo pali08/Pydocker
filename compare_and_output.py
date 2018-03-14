@@ -26,26 +26,34 @@ def compare_and_output(infilename_pdb, infilename_bcr, rots_count, best_fits_cou
 		bcr_array = np.insert(bcr_array,0, values=0, axis=1)
 		bcr_array = np.insert(bcr_array,bcr_array.shape[1], values=0, axis=1)
 	bcr_header = read_bcr_header(infilename_bcr)
-	num_of_iter = 1
+	if(bcr_header["xlength"] / bcr_header["xpixels"] -  bcr_header["ylength"] / bcr_header["ypixels"] < 0.001):
+		bin_size = bcr_header["xlength"] / bcr_header["xpixels"]
+	else:
+		print("Pixel size has to be the same in x and y direction")
+		return(1)
+		sys.exit()
 	pi_mult = 2
 	coor_list = read_pdb(infilename_pdb)[1]
 	best_fit = coor_list # in first cykle, best fit is default rotation
 	list_of_all_rots = []
 	create_folder(project_name)
-	subfolder = create_subfolders(project_name, num_of_iter, "textfiles")
-	subfolder_plot = create_subfolders(project_name, num_of_iter, "graphs")
+	subfolder = create_subfolders(project_name, "textfiles")
+	subfolder_plot = create_subfolders(project_name, "graphs")
 	axisangles, cor_sums, diff_matrices = align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult)
-	print(axisangles)
-	print(cor_sums)
-	print(len(diff_matrices))
+	#print(axisangles)
+	#print(cor_sums)
+	#print(len(diff_matrices))
 	best_fits = np.argsort(cor_sums)[::1][:best_fits_count]
-	print(best_fits)
+	#print(best_fits)
 	with open(os.path.join(subfolder, "{}_text_output.txt".format(project_name)), mode="w+", encoding='utf-8') as textoutput:
 		ind_best = 0
 		for i in range(0, len(best_fits)):
 			ind_best = best_fits[i]
 			textoutput.write("score:{}  axis{}  angle:{}  \n".format(cor_sums[ind_best],axisangles[ind_best][0:3],axisangles[ind_best][3])) 
-			draw_points(diff_matrices[ind_best],i,subfolder_plot,cor_sums[ind_best])
+			max_point = np.amax(diff_matrices[ind_best])
+			min_point = np.amin(diff_matrices[ind_best])
+			avg = (max_point + min_point)/2
+			draw_points(diff_matrices[ind_best],i,subfolder_plot,cor_sums[ind_best], max_point, min_point, avg,bin_size)
 	return(0)
 
 

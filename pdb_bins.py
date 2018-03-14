@@ -86,7 +86,7 @@ def pdb_to_bins(bin_size ,*pdb_list_to_bins):
 	2[[z,z,z,z,z][z,z,z,z,z][z,z,z,z,z][z,z,z,z,z][z,z,z,z,z]] count of internal lists is x range, count of numbers in internal list
 	is y range and z is z coordinate
 	'''
-
+	angstrom2nm = 0.1
 	pdb_000_ranges = pdb_to_000(*pdb_list_to_bins) #we save all 4 return values to pdb_000_ranges and then assign particular variables
 	
 	pdb_000 = pdb_000_ranges[0]
@@ -95,21 +95,23 @@ def pdb_to_bins(bin_size ,*pdb_list_to_bins):
 	y_rang = pdb_000_ranges[2]
 	z_rang = pdb_000_ranges[3]
 	
-	count_of_x_strips = int(x_rang / bin_size)+5 #we put 5 bins more to have some surroundings around molecule
-	count_of_y_strips = int(y_rang / bin_size)+5
+	count_of_x_strips = int((x_rang*angstrom2nm) / bin_size)+5 #we put 5 bins more to have some surroundings around molecule
+	count_of_y_strips = int((y_rang*angstrom2nm)/ bin_size)+5
 	pdb_in_bins = [[0.000 for i in range(count_of_y_strips)] for j in range(count_of_x_strips)]
 
 	for k in range(0,len(pdb_000)): #iterate trough all atoms
-		x_integerized = int(pdb_000[k][0]/bin_size + 2) # divide x coordinate by bin size and round it to lower number 
-		y_integerized = int(pdb_000[k][1]/bin_size + 2) # - int function just tears numbers after decimal point
+		x_integerized = int((pdb_000[k][0]*angstrom2nm)/bin_size + 2) # divide x coordinate by bin size and round it to lower number 
+		y_integerized = int((pdb_000[k][1]*angstrom2nm)/bin_size + 2) # - int function just tears numbers after decimal point
 		if (abs(pdb_in_bins[x_integerized][y_integerized] - 0.000) < 0.0001 ): # if z coordinate equals to 0
-			pdb_in_bins[x_integerized][y_integerized] = (pdb_000[k][2]) # add new z coordinate into list
+			pdb_in_bins[x_integerized][y_integerized] = (pdb_000[k][2])*angstrom2nm # add new z coordinate into list
 		elif (int(pdb_000[k][2]) > int(pdb_in_bins[x_integerized][y_integerized])): #if it is not equal, try if it is bigger and if yes, put new (highest) value of z coordinate into bin
 			# *1000 and int- this should make every pdb coordinate (3 decimal points) comparable
-			pdb_in_bins[x_integerized][y_integerized] = pdb_000[k][2] 
+			pdb_in_bins[x_integerized][y_integerized] = pdb_000[k][2]*angstrom2nm #angstrom2nm 
 		else: #if it is smaller continue to next iteration
 			continue 
-
+	#print(count_of_x_strips)
+	#print(count_of_y_strips)
+	#print(bin_size)
 	return pdb_in_bins, count_of_x_strips, count_of_y_strips
 
 def pdb_rots_to_bins(coor_list, bcr_header, rots_count, pi_mult):

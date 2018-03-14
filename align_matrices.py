@@ -40,6 +40,7 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult):
 	aligned_matrices = []
 	korel_sums = []	
 	matrices_of_diffs = []
+	#print(pdb_matrices)
 	if (check_surrounding(bcr_array) == 1):
 		print("Structure has more highest points- results can be distorted")
 	print("Aligning pdb matrices to bcr.")
@@ -50,7 +51,10 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult):
 		y_hp_dist = y_max_bcr - y_max_pdb #distances between indices of highest points
 		new_pdb_array = np.zeros((bcr_array_shape[0],bcr_array_shape[1])) #new pdb array with shape of bcr array 
 		diff_matrix = np.copy(new_pdb_array)
+		#print(new_pdb_array)
 		kor_sum = 0 # set kor_sum to zero and empty shape of 
+		#print(pdb_array_shape[0])
+		#print(pdb_array_shape[1])
 		try:
 			for i in range(0, pdb_array_shape[0]): 
 				for j in range(0, pdb_array_shape[1]):
@@ -58,6 +62,7 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult):
 						new_pdb_array[i+x_hp_dist][j+y_hp_dist] = pdb_array[i][j] 
 					else:
 						raise IndexError("")
+			#print(new_pdb_array)
 		except IndexError:
 			continue
 		new_pdb_array = new_pdb_array + (max_val_bcr - max_val_pdb)
@@ -66,6 +71,8 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult):
 			for j in range(0, bcr_array_shape[1]):
 				kor_sum = kor_sum + abs(bcr_array[i][j] - new_pdb_array[i][j])
 				diff_matrix[i][j] = abs(bcr_array[i][j] - new_pdb_array[i][j])
+		#print(kor_sum)
+		#print(new_pdb_array)
 		korel_sums.append(kor_sum)
 		matrices_of_diffs.append(diff_matrix)
 	return(list_of_axisangles, korel_sums, matrices_of_diffs)

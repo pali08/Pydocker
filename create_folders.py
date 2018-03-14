@@ -17,9 +17,9 @@ def create_folder(project_name):
 		return(0)
 
 #create_folder("precotodopicenejde")
-def create_subfolders(project_name, num_of_iteration, plot_or_text):
+def create_subfolders(project_name, plot_or_text):
 	project_dir = os.path.join(os.path.expanduser('~'), 'pdb_afm_docker', project_name)
-	iter_folder = '{}_iter_{}_{}'.format(project_name, num_of_iteration, plot_or_text)
+	iter_folder = '{}_{}'.format(project_name , plot_or_text)
 	subfolder = os.path.join(project_dir, iter_folder)
 	pathlib.Path(subfolder).mkdir(parents=True, exist_ok=True)
 	return(subfolder)
