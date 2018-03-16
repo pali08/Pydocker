@@ -1,4 +1,5 @@
 from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
@@ -7,47 +8,7 @@ from pdb_bins import pdb_to_bins
 import os
 
 
-def fill_coord_lists(prot_matrix): # protein matrix bcr a pdb
-	'''
-	#this function takes count of x, countof y strips and pdb_list. Pdb_to_bins function creates pdb list (format of list described in
-	#pdb_to_bins function), from which this function creates numpy arrays, which we can then pass to matplotlib to draw
-	#surface
-	'''
-	# x_strips and y_strips is count of bins in x and y direction
-	# pdb_in_bins_count = pdb_to_bins(infilename_bcr, *pdb_to_draw)
-	prot_matrix = np.array(prot_matrix)
-	x_bin_count, y_bin_count = prot_matrix.shape 
-
-	x_array = [] 
-	y_array = [] #in this array there will be coordinates stored
-	z_array = [[0.000 for y in range(0)] for x in range(x_bin_count)] #this creates list of x lists that are empty, so we can use append function in them- we append y numbers, and every number will be z coordinate
-	'''
-	#next two functions fills x and y arrays with int counts of bins
-	'''
-	for i in range (0,(x_bin_count)): 
-		x_array.append(float(i))
-	for j in range(0, (y_bin_count)):
-		y_array.append(float(j))
-	  
-	x_array = np.array(x_array) #we have to create np. array (altought it has the same format, meshgrid won`t take it)
-	y_array = np.array(y_array)
-	y_array, x_array = np.meshgrid(y_array, x_array) 
-	#print(x_bin_count)
-	#print(y_bin_count)
-	#print(len(prot_matrix[0]))
-	#print(len(prot_matrix[1])) 
-	for k in range(0, (x_bin_count)): #iterate through x bins
-		for l in range(0, (y_bin_count)): #iterate trough y bins
-			if (abs(prot_matrix[k][l] - 0.000) < 0.0001): #if bin is empty put 0.000 as z coordinate
-				z_array[k].append(0.000)
-			else:
-				z_array[k].append(prot_matrix[k][l]) # else put z coordinate there (which should be the highest coordinate for given bin)
-	z_array = np.array(z_array) #again, we have to create numpy array
-	return(x_array, y_array, z_array)
-
-
-
-def draw_points(diff_matrix, num_of_graph, subfolder, score, highest, lowest, average ,bin_size):
+def draw_points(diff_matrix, num_of_graph, subfolder, score, bin_size, pdb_aligned_matrix, bcr_matrix):
 	plt.switch_backend('TkAgg') #default backend is 'agg' and it can only draw png file. I use 'Qt4Agg' for interactive 3D graph. 
 	
 	#x_ar_bcr, y_ar_bcr, z_ar_bcr = fill_coord_lists(bcr_matrix)
@@ -66,17 +27,57 @@ def draw_points(diff_matrix, num_of_graph, subfolder, score, highest, lowest, av
 	ax.set_zlabel('Z Label')
 	ax.set_title('Correlation score is {}'.format(score))
 	'''
-	fig, ax = plt.subplots()
+	fig, (ax1, ax3, ax2) = plt.subplots(ncols=3)
 
 	data = diff_matrix
+	data2 = pdb_aligned_matrix
+	data3 = bcr_matrix
+	
+	fig.suptitle('Correlation score is {0:.3f}'.format(score))
+	
+	img1 = ax1.imshow(data)
+	divider = make_axes_locatable(ax1)
+	cax1 = divider.append_axes("right", size="5%", pad=0.05)
+	fig.colorbar(img1, cax=cax1)
 
-	cax = ax.imshow(data, interpolation='nearest', cmap=cm.afmhot)
-	ax.set_title('Correlation score is {0:.3f}'.format(score))
-	ax.set_xlabel("px \n 1 px = {0:.3f}nm".format(bin_size))
-	ax.set_ylabel("px")
+	img3 = ax3.imshow(data3)
+	divider = make_axes_locatable(ax3)
+	cax3 = divider.append_axes("right", size="5%", pad=0.05)
+	fig.colorbar(img3, cax=cax3)
 
-	cbar = fig.colorbar(cax, ticks=[lowest,average,highest], orientation='horizontal')
-	cbar.ax.set_xticklabels(["{0:.3f}nm".format(lowest),"{0:.3f}nm".format(average),"{0:.3f}nm".format(highest)])  # horizontal colorbar
+	img2 = ax2.imshow(data2)
+	divider = make_axes_locatable(ax2)
+	cax2 = divider.append_axes("right", size="5%", pad=0.05)
+	fig.colorbar(img2, cax=cax2)
+
+	ax1.set_title('Subtracted matrices')
+	ax2.set_title('Pdb surface')
+	ax3.set_title('Afm image')
+
+	ax1.set_xlabel("px")
+	ax1.set_ylabel("px")
+	ax2.set_xlabel("px")
+	ax2.set_ylabel("px")
+	ax3.set_xlabel("px \n 1 px = {0:.3f}nm".format(bin_size))
+	ax3.set_ylabel("px")
+
+	plt.tight_layout(h_pad=1)
+
+	#cax1 = ax1.imshow(data, interpolation='nearest', cmap=cm.afmhot)
+	#ax1.set_title('Correlation score is {0:.3f}'.format(score))
+	#ax1.set_xlabel("px \n 1 px = {0:.3f}nm".format(bin_size))
+	#ax1.set_ylabel("px")
+
+	#cbar1 = fig.colorbar(cax1, ax = ax1, ticks=[lowest,average,highest], orientation='vertical')
+	#cbar1.ax.set_xticklabels(["{0:.3f}nm".format(lowest),"{0:.3f}nm".format(average),"{0:.3f}nm".format(highest)])  # horizontal colorbar
+
+	#cax2 = ax2.imshow(data2, interpolation='nearest', cmap=cm.afmhot)
+	#ax2.set_title('Pdb matrix')
+	#ax2.set_xlabel("px \n 1 px = {0:.3f}nm".format(bin_size))
+	#ax2.set_ylabel("px")
+
+	#cbar2 = fig.colorbar(cax2, ax = ax2,ticks=[lowest_pdb,avg_pdb,highest_pdb], orientation='vertical')
+	#cbar2.ax.set_xticklabels(["{0:.3f}nm".format(lowest_pdb),"{0:.3f}nm".format(avg_pdb),"{0:.3f}nm".format(highest_pdb)])  # horizontal colorbar
 
 	#ax.figtext(1,20,"1 px = {0:.3f}nm".format(bin_size),horizontalalignment='center', verticalalignment='bottom')
 	'''

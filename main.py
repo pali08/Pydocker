@@ -21,7 +21,7 @@ from pdb_bins import pdb_to_000
 from pdb_bins import pdb_to_bins
 from draw_plot import draw_points
 #from draw_plot import draw_surface
-from draw_plot import fill_coord_lists
+#from draw_plot import fill_coord_lists
 from transform_coordinates import rotate
 from align_matrices import align_matrices
 import read_bcr_python 

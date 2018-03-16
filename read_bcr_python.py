@@ -42,10 +42,15 @@ def read_bcr_bin(infilename):
 		bcr_array = np.fromfile(bcr_bin, dtype=np.int16)
 		for i in range(0,len(bcr_array)):
 			float(bcr_array[i])
+		print(header_dict["xpixels"])
+		print(header_dict["ypixels"])
+		print(len(bcr_array))
 		#bcr_array = header_dict["bit2nm"] * np.flipud(np.reshape(bcr_array, (header_dict["xpixels"], header_dict["ypixels"])))
-		bcr_array = header_dict["bit2nm"] * (np.reshape(bcr_array, (header_dict["xpixels"], header_dict["ypixels"])))
+		bcr_array = header_dict["bit2nm"] * (np.reshape(bcr_array, (header_dict["ypixels"], header_dict["xpixels"])))
+		
 	return(bcr_array)
 
+#print(read_bcr_bin("../data/1012_1_crop_2.bcr"))
 
 '''
 def read_bcr_header(infilename):

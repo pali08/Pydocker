@@ -53,8 +53,8 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult):
 		diff_matrix = np.copy(new_pdb_array)
 		#print(new_pdb_array)
 		kor_sum = 0 # set kor_sum to zero and empty shape of 
-		#print(pdb_array_shape[0])
-		#print(pdb_array_shape[1])
+		print(pdb_array_shape[0])
+		print(pdb_array_shape[1])
 		try:
 			for i in range(0, pdb_array_shape[0]): 
 				for j in range(0, pdb_array_shape[1]):
@@ -75,5 +75,5 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult):
 		#print(new_pdb_array)
 		korel_sums.append(kor_sum)
 		matrices_of_diffs.append(diff_matrix)
-	return(list_of_axisangles, korel_sums, matrices_of_diffs)
+	return(list_of_axisangles, korel_sums, matrices_of_diffs, aligned_matrices)
 
