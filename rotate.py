@@ -6,6 +6,7 @@ import random
 from read_bcr_python import read_bcr_bin
 import transform_coordinates
 import math
+import sys
 '''
 def first_rot(x_rotations_count, y_rotations_count, z_rotations_count, pdb_file):
 	coord_list = read_pdb(pdb_file)[1] 
@@ -47,6 +48,11 @@ def create_rots(rots_count, pi_mult, coor_list):
 		rotation = rotate(ran_axisangle, coor_list)
 		list_of_all_rots.append(rotation)
 		list_of_all_axisangles.append(ran_axisangle)
+
+	for i in range(0, len(list_of_all_rots)):
+		print("{} {} {}".format(list_of_all_rots[i][0][0], list_of_all_rots[i][0][1], list_of_all_rots[i][0][2]))
+	sys.exit()
+
 	return(list_of_all_rots, list_of_all_axisangles)
 	
 #TODO 3 rotace -> 1 rotace (algoritmus s rovnomernou rotaciou vo v3etkych smeroch
