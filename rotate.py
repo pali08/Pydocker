@@ -38,7 +38,39 @@ def ranvec(pi_mult):
 	z_ranvec = 1.0 - (2.0*a)
 	ran_angle = random.random()*(pi_mult*math.pi)
 	return(x_ranvec, y_ranvec, z_ranvec, ran_angle)
-		
+
+def spiral_dist(points_count, main_ax):
+	golden_angle = np.pi * (3 - np.sqrt(5))
+	theta = golden_angle * np.arange(n)
+	z = np.linspace(1 - 1.0 / points_count, 1.0 / points_count - 1, points_count)
+	radius = np.sqrt(1 - z * z)
+	points = np.zeros((points_count, 3)) #points equaly distributed on sphere
+	rot_axes = np.cross(points,main_ax)
+	return(rot_axes, main_ax)
+
+def unit_vector(vector):
+    """ Returns the unit vector of the vector.  """
+    return vector / np.linalg.norm(vector)
+
+def axisange_regular(points_count, main_ax):
+    """ Returns the angle in radians between vectors 'v1' and 'v2'::
+
+            >>> angle_between((1, 0, 0), (0, 1, 0))
+            1.5707963267948966
+            >>> angle_between((1, 0, 0), (1, 0, 0))
+            0.0
+            >>> angle_between((1, 0, 0), (-1, 0, 0))
+            3.141592653589793
+    """
+	rot_axes, main_ax = spiral_dist(points_count, main_ax)
+	angle_list = []
+    v2_u = unit_vector(main_ax)
+	for i in range(0, len(points_count)):
+    	v1_u = unit_vector(rot_axes[i])
+		angle_list.append(np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))) 
+	return(rot_axes, angle_list)
+	
+	
 def create_rots(rots_count, pi_mult, coor_list):
 	#coor_list = read_pdb(infilename)[1]
 	list_of_all_rots = []
