@@ -11,12 +11,11 @@ def create_folder(project_name):
 		#new_proj_check = input("Directory already exists. Enter another name or delete folder")
 		print("Directory already exists. Enter another name or delete folder")
 		return(1)
-		quit()
+		sys.exit()
 	else:
 		pathlib.Path(project_dir).mkdir(parents=True, exist_ok=True) 
 		return(0)
 
-#create_folder("precotodopicenejde")
 def create_subfolders(project_name, plot_or_text):
 	project_dir = os.path.join(os.path.expanduser('~'), 'pdb_afm_docker', project_name)
 	iter_folder = '{}_{}'.format(project_name , plot_or_text)
@@ -24,6 +23,3 @@ def create_subfolders(project_name, plot_or_text):
 	pathlib.Path(subfolder).mkdir(parents=True, exist_ok=True)
 	return(subfolder)
 	
-#create_folder('zkouska')
-#create_subfolders('zkouska',1,'plot')
-#create_subfolders('zkouska',2,'plot')

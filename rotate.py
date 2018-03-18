@@ -53,15 +53,6 @@ def unit_vector(vector):
     return vector / np.linalg.norm(vector)
 
 def axisange_regular(points_count, main_ax):
-    """ Returns the angle in radians between vectors 'v1' and 'v2'::
-
-            >>> angle_between((1, 0, 0), (0, 1, 0))
-            1.5707963267948966
-            >>> angle_between((1, 0, 0), (1, 0, 0))
-            0.0
-            >>> angle_between((1, 0, 0), (-1, 0, 0))
-            3.141592653589793
-    """
 	rot_axes, main_ax = spiral_dist(points_count, main_ax)
 	angle_list = []
     v2_u = unit_vector(main_ax)
@@ -75,11 +66,14 @@ def create_rots(rots_count, pi_mult, coor_list):
 	#coor_list = read_pdb(infilename)[1]
 	list_of_all_rots = []
 	list_of_all_axisangles = []
+	reg_axes, reg_angles = axisangle_regular(rots_count, [0,0,1])
 	for i in range(0, rots_count):
-		ran_axisangle = ranvec(pi_mult) # it ll became axisangle
-		rotation = rotate(ran_axisangle, coor_list)
+		#ran_axisangle = ranvec(pi_mult) # it ll became axisangle
+		reg_axisangle = reg_axes[i]
+		reg_axisangle = reg_axisangle.append(reg_angles[i])
+		rotation = rotate(reg_axisangle, coor_list)
 		list_of_all_rots.append(rotation)
-		list_of_all_axisangles.append(ran_axisangle)
+		list_of_all_axisangles.append(reg_axisangle)
 
 	for i in range(0, len(list_of_all_rots)):
 		print("{} {} {}".format(list_of_all_rots[i][0][0], list_of_all_rots[i][0][1], list_of_all_rots[i][0][2]))
