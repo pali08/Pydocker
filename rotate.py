@@ -7,6 +7,7 @@ from read_bcr_python import read_bcr_bin
 import transform_coordinates
 import math
 import sys
+from surface3d_demo2 import surface 
 '''
 def first_rot(x_rotations_count, y_rotations_count, z_rotations_count, pdb_file):
 	coord_list = read_pdb(pdb_file)[1] 
@@ -41,23 +42,32 @@ def ranvec(pi_mult):
 
 def spiral_dist(points_count, main_ax):
 	golden_angle = np.pi * (3 - np.sqrt(5))
-	theta = golden_angle * np.arange(n)
+	theta = golden_angle * np.arange(points_count)
 	z = np.linspace(1 - 1.0 / points_count, 1.0 / points_count - 1, points_count)
 	radius = np.sqrt(1 - z * z)
 	points = np.zeros((points_count, 3)) #points equaly distributed on sphere
+	points[:,0] = radius * np.cos(theta)
+	points[:,1] = radius * np.sin(theta)
+	points[:,2] = z
 	rot_axes = np.cross(points,main_ax)
+	surface(points[:,0],points[:,1],points[:,2])
+	sys.exit()
+	#print("these are rot axes")
+	#print(rot_axes) 
+	#print("eorotaxes")
 	return(rot_axes, main_ax)
 
 def unit_vector(vector):
-    """ Returns the unit vector of the vector.  """
-    return vector / np.linalg.norm(vector)
+	""" Returns the unit vector of the vector.  """
+	#print(vector)
+	return vector / np.linalg.norm(vector)
 
-def axisange_regular(points_count, main_ax):
+def axisangle_regular(points_count, main_ax):
 	rot_axes, main_ax = spiral_dist(points_count, main_ax)
 	angle_list = []
-    v2_u = unit_vector(main_ax)
-	for i in range(0, len(points_count)):
-    	v1_u = unit_vector(rot_axes[i])
+	v2_u = unit_vector(main_ax)
+	for i in range(0, points_count):
+		v1_u = unit_vector(rot_axes[i])
 		angle_list.append(np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))) 
 	return(rot_axes, angle_list)
 	
@@ -69,15 +79,18 @@ def create_rots(rots_count, pi_mult, coor_list):
 	reg_axes, reg_angles = axisangle_regular(rots_count, [0,0,1])
 	for i in range(0, rots_count):
 		#ran_axisangle = ranvec(pi_mult) # it ll became axisangle
-		reg_axisangle = reg_axes[i]
-		reg_axisangle = reg_axisangle.append(reg_angles[i])
+		reg_axisangle = np.append(reg_axes[i], reg_angles[i])
 		rotation = rotate(reg_axisangle, coor_list)
 		list_of_all_rots.append(rotation)
 		list_of_all_axisangles.append(reg_axisangle)
 
-	for i in range(0, len(list_of_all_rots)):
-		print("{} {} {}".format(list_of_all_rots[i][0][0], list_of_all_rots[i][0][1], list_of_all_rots[i][0][2]))
-	sys.exit()
+	#for i in range(0, len(list_of_all_rots)):
+		#print("{} {} {}".format(list_of_all_axisangles[i][0], list_of_all_axisangles[i][1], list_of_all_axisangles[i][2]))
+	#x = np.array([item[0] for item in list_of_all_axisangles])
+	#y = np.array([item[1] for item in list_of_all_axisangles])
+	#z = np.array([item[2] for item in list_of_all_axisangles])
+	#surface(x,y,z)
+	#sys.exit()
 
 	return(list_of_all_rots, list_of_all_axisangles)
 	
