@@ -66,23 +66,31 @@ def axisangle_to_q(phi, axis):
 #print(axisangle_to_q(np.pi,qv_mult(q_conjugate(q_mult([1,4,5,7],[5,8,9,2])), (1,2,3))))
 
 
-def rotate_vec(axis_angle, xyz):
+def rotate_vec(axis_angle, axis_angle_z, xyz):
 	#axis = axis.split(",")
 	axis = axis_angle[:3]
 	phi = axis_angle[3]
+
+	axis_z = axis_angle_z[:3]
+	phi_z = axis_angle_z[3]
+
 	#for i in range(0,len(axis)):
 	#	axis[i] = int(axis[i])
 	xyz = tuple(xyz)
 	r = axisangle_to_q(phi, axis)
-	#print(r)
-	new_xyz = qv_mult(r, xyz)
+	r_z = axisangle_to_q(phi_z, axis_z)
+
+	quat_combo = q_mult(r,r_z)
+
+	new_xyz = qv_mult(quat_combo, xyz)
+
 	return new_xyz
 
 #print(rotate_vec(np.pi/4, "0,1,0", [2,0,0]))
 
 #coord_list_a = [[1.0,0.0,0.0], [2.0,0.0,0.0], [3.0,5.0,2.0]]
 
-def rotate(axis_angle, coord_list):
+def rotate(axis_angle, axis_angle_z, coord_list):
 	center_of_rot = find_center(coord_list)
 	x_cent = center_of_rot[0]
 	y_cent = center_of_rot[1]
@@ -94,7 +102,7 @@ def rotate(axis_angle, coord_list):
 		xyz = [0,0,0]
 		for j in range(0, len(coord_list[i])):
 			xyz[j] = coord_list[i][j] - center_of_rot[j] 
-		new_xyz = rotate_vec(axis_angle, xyz)
+		new_xyz = rotate_vec(axis_angle, axis_angle_z, xyz)
 		new_xyz = list(new_xyz)
 		#for k in range(0, 3):
 		#	new_xyz[k] = new_xyz[k] # if we comment out this, new coor list stays centered.but pdb to 000 will put it into 000 in every case  

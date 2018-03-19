@@ -74,12 +74,14 @@ def axisangle_regular(points_count, main_ax):
 	
 def create_rots(rots_count, pi_mult, coor_list):
 	#coor_list = read_pdb(infilename)[1]
+	rots_count_all_dirs = int(rots_count / 10)
 	list_of_all_rots = []
 	list_of_all_axisangles = []
-	reg_axes, reg_angles = axisangle_regular(rots_count, [0,0,1])
+	reg_axes, reg_angles = axisangle_regular(rots_count_all_dirs, [0,0,1])
 	for i in range(0, rots_count):
 		#ran_axisangle = ranvec(pi_mult) # it ll became axisangle
 		reg_axisangle = np.append(reg_axes[i], reg_angles[i])
+		#TODO novy cykel kde bude 10 rotacii pre kazdy Point Of View
 		rotation = rotate(reg_axisangle, coor_list)
 		list_of_all_rots.append(rotation)
 		list_of_all_axisangles.append(reg_axisangle)
