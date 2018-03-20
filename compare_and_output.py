@@ -39,7 +39,7 @@ def compare_and_output(infilename_pdb, infilename_bcr, rots_count, best_fits_cou
 	create_folder(project_name)
 	subfolder = create_subfolders(project_name, "textfiles")
 	subfolder_plot = create_subfolders(project_name, "graphs")
-	axisangles, cor_sums, diff_matrices, aligned_pdb_matrices = align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult)
+	axisangles, cor_sums, diff_matrices, aligned_pdb_matrices, axisangles_z = align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult)
 	#print(axisangles)
 	#print(cor_sums)
 	#print(len(diff_matrices))
@@ -49,7 +49,7 @@ def compare_and_output(infilename_pdb, infilename_bcr, rots_count, best_fits_cou
 		ind_best = 0
 		for i in range(0, len(best_fits)):
 			ind_best = best_fits[i]
-			textoutput.write("score: {} axis {} {} {} angle {} \n".format(cor_sums[ind_best],axisangles[ind_best][0],axisangles[ind_best][1],axisangles[ind_best][2],axisangles[ind_best][3])) 
+			textoutput.write("score: {} axis {} {} {} angle {} angle_around_z_coor {}\n".format(cor_sums[ind_best],axisangles[ind_best][0],axisangles[ind_best][1],axisangles[ind_best][2],axisangles[ind_best][3]), axisangles_z[ind_best][3]) 
 			max_point = np.amax(diff_matrices[ind_best])
 			min_point = np.amin(diff_matrices[ind_best])
 			avg = (max_point + min_point)/2

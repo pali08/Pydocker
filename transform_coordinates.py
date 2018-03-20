@@ -20,6 +20,7 @@ def find_center(coord_list):
 	return x_center, y_center, z_center
 
 def normalize(xyz, tolerance=0.00001):
+	#print(xyz)
 	mag2 = sum(n * n for n in xyz)
 	if abs(mag2 - 1.0) > tolerance:
 		mag = np.sqrt(mag2)
@@ -95,7 +96,7 @@ def rotate(axis_angle, axis_angle_z, coord_list):
 	x_cent = center_of_rot[0]
 	y_cent = center_of_rot[1]
 	z_cent = center_of_rot[2]
-	new_coor_list = [] 
+	new_coor_list = []
 	
 	for i in range(0, len(coord_list)):
 		new_xyz = ()
@@ -108,7 +109,7 @@ def rotate(axis_angle, axis_angle_z, coord_list):
 		#	new_xyz[k] = new_xyz[k] # if we comment out this, new coor list stays centered.but pdb to 000 will put it into 000 in every case  
 		new_coor_list.append(new_xyz)
 	#print(new_coor_list)
-	return new_coor_list
+	return new_coor_list 
 	
 #print(rotate(np.pi/4, "0,1,0", coord_list_a))
 # posun+rotace v jednom kroku. 
