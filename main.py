@@ -37,9 +37,10 @@ def Main():
 	parser.add_argument("--rots_count", help = "Count of rotations in every iteration", type=int, default=1000)
 	parser.add_argument("--best_fits_count", help = "Count of rotations in every iteration", type=int, default=20)
 	args = parser.parse_args()
-		
-	compare_and_output(args.pdb_file, args.bcr_file, args.rots_count, args.best_fits_count, args.project_name)
-
+	try:
+		compare_and_output(args.pdb_file, args.bcr_file, args.rots_count, args.best_fits_count, args.project_name)
+	except KeyboardInterrupt:
+		print("The program was interrupted by user")
 	return()
 if __name__  == '__main__' :
             Main()
