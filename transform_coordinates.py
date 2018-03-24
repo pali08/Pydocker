@@ -103,7 +103,8 @@ def rotate(axis_angle, coord_list):
 		new_xyz = ()
 		xyz = [0.0,0.0,0.0]
 		for j in range(0, len(coord_list[i])):
-			xyz[j] = coord_list[i][j] - center_of_rot[j] 
+			#xyz[j] = coord_list[i][j] - center_of_rot[j] 
+			xyz[j] = coord_list[i][j]
 		new_xyz = rotate_vec(axis_angle, xyz)
 		new_xyz = list(new_xyz)
 		new_coor_list.append(new_xyz)

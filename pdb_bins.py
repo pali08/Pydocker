@@ -126,7 +126,4 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, pi_mult):
 		pdb_matrices.append(pdb_matrix)
 	print("Creating 2D matrices from bcr file")
 	return(pdb_matrices, rots_list, axisangle_list, axisangle_z_list)
-#pdb_lst = [[1.0,1.0,2.0],[2.0,3.0,5.0],[2.5,3.5,4.5]]
-#print(pdb_lst[0][0])
-#print(pdb_rots_to_bins (pdb_lst, {'xlength':3.0, 'ylength':3.0, 'xpixels':128, 'ypixels':128}, 5, 1.0))
 

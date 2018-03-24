@@ -53,6 +53,7 @@ def spiral_dist(points_count, main_ax):
 	rot_axes = [[] for i in range(0, len(points))]
 	for i in range(0, len(points)):
 		rot_axes[i] = np.cross(points[i], main_ax)
+	print(rot_axes)
 	rot_axes = np.array(rot_axes)
 	#surface(points[:,0],points[:,1],points[:,2])
 	#sys.exit()
@@ -72,7 +73,8 @@ def axisangle_regular(points_count, main_ax):
 	v2_u = unit_vector(main_ax)
 	for i in range(0, points_count):
 		v1_u = unit_vector(points[i])
-		angle_list.append((np.arccos(np.clip(np.dot(v2_u, v1_u), -1.0, 1.0)))) 
+		angle_list.append((np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))))
+	#print(angle_list)
 	return(rot_axes, angle_list)
 	
 	
@@ -93,17 +95,19 @@ def create_rots(rots_count, pi_mult, coor_list):
 	for i in range(0, rots_count_all_dirs):
 		#for j in range(0, rots_count_z_dir):
 		reg_axisangle = np.append(reg_axes[i], reg_angles[i])
+		#print(reg_axisangle)
 		rotation = rotate(reg_axisangle, coor_list)
+		#print(rotation[0])
 		list_of_all_rots.append(rotation)
 		list_of_all_axisangles.append(reg_axisangle)
-		surface_xyz.append(transform_coordinates.normalize(rotation[0])) 
+		surface_xyz.append((rotation[0])) 
 	#for i in range(0, len(list_of_all_rots)):
 		#print("{} {} {}".format(list_of_all_axisangles[i][0], list_of_all_axisangles[i][1], list_of_all_axisangles[i][2]))
 	x = np.array([item[0] for item in surface_xyz])
 	y = np.array([item[1] for item in surface_xyz])
 	z = np.array([item[2] for item in surface_xyz])
-	surface(x,y,z)
-	sys.exit()
+	#surface(x,y,z)
+	#sys.exit()
 
 	return(list_of_all_rots, list_of_all_axisangles, reg_axisangle_z)
 	
