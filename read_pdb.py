@@ -9,19 +9,19 @@ import argparse
 
 #this function deletes empty spaces 
 def strip_pdb(*inp_data):
-	output_data = []
-	print((len(inp_data)))
-	for i in range(0,len(inp_data)):
-		for key, value in list(inp_data[i].items()):
-			key = key.strip() #delete empty spaces in 
-			if (isinstance(value, str)):
-				inp_data[i][key] = value.replace(' ','')
-				if value and not value.isspace():
-					continue
-				else:
-					del inp_data[i][key]
-		output_data.append(inp_data[i])
-	return output_data
+    output_data = []
+    print((len(inp_data)))
+    for i in range(0,len(inp_data)):
+        for key, value in list(inp_data[i].items()):
+            key = key.strip() #delete empty spaces in 
+            if (isinstance(value, str)):
+                inp_data[i][key] = value.replace(' ','')
+                if value and not value.isspace():
+                    continue
+                else:
+                    del inp_data[i][key]
+        output_data.append(inp_data[i])
+    return output_data
 
 def read_pdb(infilename):
     '''
@@ -38,7 +38,7 @@ def read_pdb(infilename):
     for line in lines:
         record = {} # empty record every iteration
         record_xyz = []
-        if ((line.startswith("ATOM",0,4)) | (line.startswith("HETATM",0,6))):		
+        if ((line.startswith("ATOM",0,4)) | (line.startswith("HETATM",0,6))):       
             record["rec_name"] = line[0:6] 
             record["ser_num"] = line[6:11]
             record["at_name"] = line[12:16]

@@ -9,12 +9,12 @@ rot_axes, angle_list = axisangle_regular(100, [0,0,1])
 #print(rot_axes)
 rots = []
 for i in range(0,len(rot_axes)):
-	rot_axes[i] = normalize(rot_axes[i])
+    rot_axes[i] = normalize(rot_axes[i])
 for i in range(0, len(rot_axes)):
-	rot_axisangle = np.append(normalize(rot_axes[i]),angle_list[i])
-	print(rot_axisangle)
-	new_xyz = rotate_vec(rot_axisangle,normalize((0,0,100)))
-	rots.append(new_xyz)
+    rot_axisangle = np.append(normalize(rot_axes[i]),angle_list[i])
+    print(rot_axisangle)
+    new_xyz = rotate_vec(rot_axisangle,normalize((0,0,100)))
+    rots.append(new_xyz)
 rots = np.array(rots)
 rots_x = rots[:,0]
 rots_y = rots[:,1]
