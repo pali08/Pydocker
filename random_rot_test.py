@@ -8,5 +8,5 @@ print("sadfs")
 print(axisangles)
 print(rots)
 #for i in range(0, len(rots)):
-#	print("{} {} {}".format(rots[i][0][0],rots[i][0][1],rots[i][0][2]))
+#   print("{} {} {}".format(rots[i][0][0],rots[i][0][1],rots[i][0][2]))
 
