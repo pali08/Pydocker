@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import math 
+import math
 import itertools
 import numpy as np
 
@@ -108,8 +108,6 @@ def rotate(axis_angle, coord_list):
         new_xyz = rotate_vec(axis_angle, xyz)
         new_xyz = list(new_xyz)
         new_coor_list.append(new_xyz)
-    return new_coor_list 
-    
+    return new_coor_list
 #print(rotate(np.pi/4, "0,1,0", coord_list_a))
 # posun+rotace v jednom kroku. 
-          

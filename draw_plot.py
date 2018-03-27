@@ -10,15 +10,15 @@ import os
 
 def draw_points(diff_matrix, num_of_graph, subfolder, score, bin_size, pdb_aligned_matrix, bcr_matrix):
     plt.switch_backend('TkAgg') #default backend is 'agg' and it can only draw png file. I use 'Qt4Agg' for interactive 3D graph. 
-    
+
     #x_ar_bcr, y_ar_bcr, z_ar_bcr = fill_coord_lists(bcr_matrix)
-    
+
     #x_ar_pdb, y_ar_pdb, z_ar_pdb = fill_coord_lists(pdb_matrix)
-    
+
     #fig = plt.figure(1)
     '''
     ax = fig.add_subplot(211, projection='3d')
-     
+
     ax.scatter(x_ar_bcr, y_ar_bcr, z_ar_bcr, color='red')
     ax.scatter(x_ar_pdb, y_ar_pdb, z_ar_pdb, color='green')
 
@@ -32,9 +32,9 @@ def draw_points(diff_matrix, num_of_graph, subfolder, score, bin_size, pdb_align
     data = diff_matrix
     data2 = pdb_aligned_matrix
     data3 = bcr_matrix
-    
+
     fig.suptitle('Correlation score is {0:.3f}'.format(score))
-    
+
     img1 = ax1.imshow(data)
     divider = make_axes_locatable(ax1)
     cax1 = divider.append_axes("right", size="5%", pad=0.05)

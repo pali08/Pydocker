@@ -36,7 +36,7 @@ def read_bcr_bin(infilename):
     if (('headersize' not in header_dict) or (header_dict['headersize'] == 2048)):
         header_size = 2048
     else:
-        header_size = header_dict['headersize']         
+        header_size = header_dict['headersize']
     with open(infilename, mode = 'rb') as bcr_bin:
         bcr_bin.seek(header_size, os.SEEK_SET)
         bcr_array = np.fromfile(bcr_bin, dtype=np.int16)
@@ -47,7 +47,6 @@ def read_bcr_bin(infilename):
         print(len(bcr_array))
         #bcr_array = header_dict["bit2nm"] * np.flipud(np.reshape(bcr_array, (int(header_dict["xpixels"]), int(header_dict["ypixels"]))))
         bcr_array = header_dict["bit2nm"] * (np.reshape(bcr_array, (int(header_dict["ypixels"]), int(header_dict["xpixels"]))))
-        
     return(bcr_array)
 
 #print(read_bcr_bin("../data/1012_1_crop_2.bcr"))
@@ -73,7 +72,7 @@ def read_bcr_header(infilename):
 # ok, not a bin, but don't wanna rewrite all functions
 def read_bcr_bin(infilename):
     bcr_array = np.genfromtxt(infilename, skip_header = 12)
-    #highest_point = bcr_array.max() 
+    #highest_point = bcr_array.max()
     #bcr_array = bcr_array + (1000 - highest_point) #put those 3 lines also in real read bcr bin function
     print("reading binary part (matrix) from bcr file")
     return(bcr_array)

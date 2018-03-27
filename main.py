@@ -24,8 +24,8 @@ from draw_plot import draw_points
 #from draw_plot import fill_coord_lists
 from transform_coordinates import rotate
 from align_matrices import align_matrices
-import read_bcr_python 
-from compare_and_output import compare_and_output 
+import read_bcr_python
+from compare_and_output import compare_and_output
 
 def Main():
     #plt.switch_backend('Qt4Agg') 

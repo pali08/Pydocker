@@ -13,7 +13,7 @@ def create_folder(project_name):
         return(1)
         sys.exit()
     else:
-        pathlib.Path(project_dir).mkdir(parents=True, exist_ok=True) 
+        pathlib.Path(project_dir).mkdir(parents=True, exist_ok=True)
         return(0)
 
 def create_subfolders(project_name, plot_or_text):
@@ -22,4 +22,4 @@ def create_subfolders(project_name, plot_or_text):
     subfolder = os.path.join(project_dir, iter_folder)
     pathlib.Path(subfolder).mkdir(parents=True, exist_ok=True)
     return(subfolder)
-    
+

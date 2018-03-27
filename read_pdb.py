@@ -38,8 +38,8 @@ def read_pdb(infilename):
     for line in lines:
         record = {} # empty record every iteration
         record_xyz = []
-        if ((line.startswith("ATOM",0,4)) | (line.startswith("HETATM",0,6))):       
-            record["rec_name"] = line[0:6] 
+        if ((line.startswith("ATOM",0,4)) | (line.startswith("HETATM",0,6))):
+            record["rec_name"] = line[0:6]
             record["ser_num"] = line[6:11]
             record["at_name"] = line[12:16]
             record["alt_loc"] = line[16:17]

@@ -18,11 +18,11 @@ import numpy as np
 
 def draw_points(matrix, bin_size, pdb_file_name, bcr_file_name):
     plt.switch_backend('TkAgg') #default backend is 'agg' and it can only draw png file. I use 'Qt4Agg' for interactive 3D graph. 
-    
+
     fig, ax = plt.subplots()
 
     data = matrix
-    
+
     highest = np.amax(matrix)
     lowest = np.amin(matrix)
 
@@ -46,12 +46,12 @@ def Main():
     parser = argparse.ArgumentParser(description='Rotation from Docker output file to graph')
     parser.add_argument("pdb_file", help = "pdb file to read", type=str)
     parser.add_argument("bcr_file", help = "bcr file to read bin size", type=str)
-    parser.add_argument("output_text", help = "<name of project>_textfile.txt", type=str) 
+    parser.add_argument("output_text", help = "<name of project>_textfile.txt", type=str)
     parser.add_argument("line", help = "number of line to read axisangle", type=str)
     args = parser.parse_args()
-        
+
     header = read_bcr_header(args.bcr_file)
-    
+
     bin_size = header['xlength']/header['xpixels']
 
     pdb_lst = read_pdb(args.pdb_file)[1]

@@ -1,5 +1,5 @@
 #/usr/bin/env python3
-import sys, os 
+import sys, os
 from align_matrices import align_matrices
 from read_bcr_python import read_bcr_header, read_bcr_bin
 from read_pdb import read_pdb
@@ -16,7 +16,7 @@ def best_fit_find(best_fit, bcr_header, bcr_array, new_corsum_min, old_corsum_mi
     pi_mult = pi_mult/2
     best_fit = all_rots[new_corsum_min_index]
     return(best_fit, pi_mult, new_corsum_min, new_corsum_min_index, old_corsum_min, all_rots, cor_sums, matrices_of_diffs)
-    
+
 def compare_and_output(infilename_pdb, infilename_bcr, rots_count, best_fits_count,project_name):
     bcr_array = np.array(read_bcr_bin(infilename_bcr))
     # we put some zeroes around 

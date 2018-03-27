@@ -1,4 +1,4 @@
-import numpy as np 
+import numpy as np
 from transform_coordinates import rotate
 from read_pdb import read_pdb
 import random
@@ -7,11 +7,11 @@ from read_bcr_python import read_bcr_bin
 import transform_coordinates
 import math
 import sys
-from surface3d_demo2 import surface 
+from surface3d_demo2 import surface
 '''
 def first_rot(x_rotations_count, y_rotations_count, z_rotations_count, pdb_file):
-    coord_list = read_pdb(pdb_file)[1] 
-    y_turn_angle = (2*np.pi)/y_rotations_count  
+    coord_list = read_pdb(pdb_file)[1]
+    y_turn_angle = (2*np.pi)/y_rotations_count
     x_turn_angle = (2*np.pi)/x_rotations_count
     z_turn_angle = (2*np.pi)/x_rotations_count
     list_of_all_rots=[]
@@ -22,7 +22,7 @@ def first_rot(x_rotations_count, y_rotations_count, z_rotations_count, pdb_file)
             for k in range(0, z_rotations_count):
                 coor_list_final_rot = rotate(z_turn_angle*k, "0,0,1", *coor_list_y_rot)
                 list_of_all_rots.append(coor_list_final_rot)
-                
+
     return(list_of_all_rots)
 '''
 def ranvec(pi_mult):
@@ -76,8 +76,8 @@ def axisangle_regular(points_count, main_ax):
         angle_list.append((np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))))
     #print(angle_list)
     return(rot_axes, angle_list)
-    
-    
+
+
 def create_rots(rots_count, pi_mult, coor_list):
     #coor_list = read_pdb(infilename)[1]
     rots_count_all_dirs = int(rots_count/10)
@@ -100,7 +100,7 @@ def create_rots(rots_count, pi_mult, coor_list):
         #print(rotation[0])
         list_of_all_rots.append(rotation)
         list_of_all_axisangles.append(reg_axisangle)
-        surface_xyz.append((rotation[0])) 
+        surface_xyz.append((rotation[0]))
     #for i in range(0, len(list_of_all_rots)):
         #print("{} {} {}".format(list_of_all_axisangles[i][0], list_of_all_axisangles[i][1], list_of_all_axisangles[i][2]))
     x = np.array([item[0] for item in surface_xyz])
@@ -111,10 +111,15 @@ def create_rots(rots_count, pi_mult, coor_list):
 
     return(list_of_all_rots, list_of_all_axisangles, reg_axisangle_z)
 
+
 def rotate_around_z(rots_count_z, coor_list):
     angle = (2*np.pi)/rots_count_z
     rot_angles = [i*angle for i in range(0,rots_count)]
-    for i in range()
+    new_coor_lists = []
+    for i in range(0, rots_count_z):
+        new_coor_list = rotate([0,0,1,rot_angles[z]], coor_list)
+        new_coor_lists.append(new_coor_list)
+    return(new_coor_lists)
 
 #TODO 3 rotace -> 1 rotace (algoritmus s rovnomernou rotaciou vo v3etkych smeroch
 # na skusku: vsetky rotace do 1 grafu -> gula
