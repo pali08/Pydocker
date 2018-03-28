@@ -33,8 +33,8 @@ def check_surrounding(matrix):
 
 #uprav navratovu hodnotu
 
-def align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult):
-    pdb_matrices, list_of_all_rots, list_of_axisangles, list_of_all_axisangles_z = pdb_rots_to_bins(coor_list, bcr_header, rots_count, pi_mult)
+def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_around_z):
+    pdb_matrices, list_of_all_rots, list_of_axisangles, list_of_all_angles_z = pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z)
     bcr_array_shape, bcr_array, ind_max_value_bcr, max_val_bcr = find_highest_point(bcr_array)
     x_max_bcr, y_max_bcr = ind_max_value_bcr
     aligned_matrices = []
@@ -75,5 +75,5 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, pi_mult):
         #print(new_pdb_array)
         korel_sums.append(kor_sum)
         matrices_of_diffs.append(diff_matrix)
-    return(list_of_axisangles, korel_sums, matrices_of_diffs, aligned_matrices, list_of_all_axisangles_z)
+    return(list_of_axisangles, korel_sums, matrices_of_diffs, aligned_matrices, list_of_all_angles_z)
 

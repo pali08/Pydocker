@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+import numpy as np
 from operator import itemgetter
 import urllib.request, urllib.parse, urllib.error
 import re
@@ -108,14 +109,14 @@ def pdb_to_bins(bin_size ,*pdb_list_to_bins):
         y_integerized = int((pdb_000[k][1]*angstrom2nm)/bin_size + 2) # - int function just tears numbers after decimal point
         if ((abs(pdb_in_bins[x_integerized][y_integerized] - 0.000) < 0.0001) or ((pdb_000[k][2]) > (pdb_in_bins[x_integerized][y_integerized]))): # if z coordinate equals to 0
             pdb_in_bins[x_integerized][y_integerized] = (pdb_000[k][2])*angstrom2nm # add new z coordinate into list
-            pdb_highest_points[x_integerized][y_integerized] = [pdb_000[k][0],pdb_000[k][1],pdb_000[k][2]]
+            pdb_surface[x_integerized][y_integerized] = [pdb_000[k][0],pdb_000[k][1],pdb_000[k][2]]
         else: #if it is smaller continue to next iteration
             continue
-    pdb_surface = [it for it in list(np.array(pdb_surface).flatten((np.array(pdb_surface)).all())) if it is not None]
+    pdb_surface = [it for it in list(np.array(pdb_surface).flatten((np.array(pdb_surface)).all())) if it is not None] #pdb list with surface atoms
     #return pdb_in_bins, count_of_x_strips, count_of_y_strips, pdb_surface
     return pdb_in_bins,pdb_surface
 
-def pdb_rots_to_bins(coor_list, bcr_header, rots_count, pi_mult):
+def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z):
     #print("Creating 2D matrices from bcr file")
     #bcr_header = read_bcr_header(infilename_bcr)
     if (bcr_header['xlength']/bcr_header['xpixels'] - bcr_header['ylength']/bcr_header['ypixels'] < 0.01) and (not(set(("xunit" and "yunit" and "zunit")).issubset(bcr_header))):
@@ -124,11 +125,15 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, pi_mult):
         print("Pixels must be square.")
         sys.exit()
     print("Rotating pdb and binning.")
-    rots_list, axisangle_list, axisangle_z_list = create_rots(rots_count, pi_mult ,coor_list)
+    rots_list, axisangle_list = create_rots(rots_count,coor_list)
     pdb_matrices = []
+    angles_z = []
     for i in range(0, len(rots_list)):
-        pdb_matrix,pdb_surface_matr = pdb_to_bins(bin_size, *rots_list[i])
+        pdb_matrix,pdb_surface = pdb_to_bins(bin_size, *rots_list[i])
         pdb_matrices.append(pdb_matrix)
-        pdb_matrices.extend(rotate_around_z(rots_count_z, pdb_surface_matr))
-    return(pdb_matrices, rots_list, axisangle_list, axisangle_z_list)
+        angles_z.append(0.0)
+        pdb_matrices_ar_z, angle_z_list = rotate_around_z(rots_count_around_z, pdb_surface)
+        pdb_matrices.extend(pdb_matrices_ar_z)
+        angles_z.extend(angle_z_list) 
+    return(pdb_matrices, rots_list, axisangle_list, angles_z)
 
