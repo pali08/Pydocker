@@ -83,7 +83,7 @@ def create_rots(rots_count, coor_list):
     list_of_all_rots = []
     #list_of_all_axisangles = [[] for n in range(0,rots_count_all_dirs*rots_count_z_dir)]
     list_of_all_axisangles = []
-    reg_axes, reg_angles = axisangle_regular(rots_count, [1.0,0.0,0.0])
+    reg_axes, reg_angles = axisangle_regular(rots_count, [0.0,0.0,1.0])
     #print(reg_axes)
     #print(reg_angles)
     surface_xyz = []
@@ -100,11 +100,11 @@ def create_rots(rots_count, coor_list):
         surface_xyz.append((rotation[0]))
     #for i in range(0, len(list_of_all_rots)):
         #print("{} {} {}".format(list_of_all_axisangles[i][0], list_of_all_axisangles[i][1], list_of_all_axisangles[i][2]))
-    x = np.array([item[0] for item in surface_xyz])
-    y = np.array([item[1] for item in surface_xyz])
-    z = np.array([item[2] for item in surface_xyz])
-    surface(x,y,z)
-    sys.exit()
+    #x = np.array([item[0] for item in surface_xyz])
+    #y = np.array([item[1] for item in surface_xyz])
+    #z = np.array([item[2] for item in surface_xyz])
+    #surface(x,y,z)
+    #sys.exit()
 
     return(list_of_all_rots, list_of_all_axisangles)
 
