@@ -29,7 +29,7 @@ class Refine(object)
 
 
     def get_count_from_angle(self):
-        self.whole_count = int((2*self.points_count_refin)/(1-np.cos(self.angle_ref)))
+        self.whole_count = int((2*self.points_count_refin)/(1-np.cos(self.angle_ref))) # if I want x points in y degrees around wanted rotation, how many points will be on whole sphere?
         return(self.whole_count)
 
     def dist_point_on_cap(self):
