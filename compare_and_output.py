@@ -7,8 +7,10 @@ from create_folders import create_folder, create_subfolders
 import numpy as np
 from draw_plot import draw_points
 import heapq
+from create_folders import CreateFolder
+from create_folders import CreateFolderRefine
 
-def compare_and_output(infilename_pdb, infilename_bcr, rots_count, rots_count_around_z, best_fits_count,project_name):
+def compare_and_output(infilename_pdb, infilename_bcr, rots_count, rots_count_around_z, best_fits_count,project_name, refine=False, ref_angle=None, docker_rough_output=None):
     bcr_array = np.array(read_bcr_bin(infilename_bcr))
     bcr_header = read_bcr_header(infilename_bcr)
     if(bcr_header["xlength"] / bcr_header["xpixels"] -  bcr_header["ylength"] / bcr_header["ypixels"] < 0.01):
@@ -21,10 +23,18 @@ def compare_and_output(infilename_pdb, infilename_bcr, rots_count, rots_count_ar
     coor_list = read_pdb(infilename_pdb)[1]
     best_fit = coor_list # in first cykle, best fit is default rotation
     list_of_all_rots = []
-    create_folder(project_name)
-    subfolder = create_subfolders(project_name, "textfiles")
-    subfolder_plot = create_subfolders(project_name, "graphs")
-    axisangles, cor_sums, diff_matrices, aligned_pdb_matrices, angles_z = align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_around_z)
+    if((refine=False) and (ref_angle is None) and (docker_rough_output is None)):
+        create_folders_object = CreateFolders(project_name)
+    elif(refine=True and (ref_angle is not None) and (docker_rough_output is not None))
+        create_folders_object = CreateFoldersRefine(project_name)
+
+    create_folders_object.create_folder()
+    create_folders_object.plot_or_text = "textfile"
+    subfolder = create_folders_object.create_subfolders()
+    create_folders_object.plot_or_text = "graphs"
+    subfolder_plot = create_folders_object.create_subfolders()
+
+    axisangles, cor_sums, diff_matrices, aligned_pdb_matrices, angles_z = align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_around_z, refine=False, ref_angle=None, docker_rough_output=None)
     best_fits = np.argsort(cor_sums)[::1][:best_fits_count]
     with open(os.path.join(subfolder, "{}_text_output.txt".format(project_name)), mode="w+", encoding='utf-8') as textoutput:
         ind_best = 0

@@ -118,12 +118,21 @@ class CreateRots(object):
         return(self.new_coor_lists, self.angle_z_list)
 
 class CreateRotsRefine(CreateRots):
-    def __init__(self, rots_count, coor_list, ref_angle, docker_rough_output):
+    def __init__(self, rots_count, coor_list, ref_angle, docker_rough_output, ref_line_num):
        CreateRots.__init__(self, rots_count, coor_list) #rots_count = points count on cap
        self.ref_angle = ref_angle
        self.docker_rough_output = docker_rough_output
        self.z_axis = [0.0,0.0,1.0]
     
+    def rotate_to_rough_output(self,self.docker_rough_output, self.res_num_to_refine, self.pdb_list):
+        line = linecache.getline(self.docker_rough_output, self.ref_line_num)
+        self.axisangle = operator.itemgetter(3,4,5,7)(line.split())
+        self.angle_z = operator.itemgetter(9)(line.split())
+        self.z_axisangle = [0.0,0.0,0.1,self.z_angle]
+        self.rot_global = transform_coordinates.rotate(self.axisangle, self.pdb_list)
+        self.coor_list = transform_coordinates.rotate(self.z_axisangle, self.rot_global)
+        return()
+        
     def get_count_from_angle(self):
         self.whole_count = int((2*self.rots_count)/(1-np.cos(self.ref_angle))) # if I want x points in y degrees around wanted rotation, how many points will be on whole sphere?
         return()
@@ -148,3 +157,17 @@ class CreateRotsRefine(CreateRots):
             self.reg_angles.append((np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))))
         self.reg_axes = np.array(self.rot_axes)
         return()
+
+
+
+def rotate_around_z(rots_count, coor_list):
+    angle = (2*np.pi)/rots_count
+    rot_angles = [i*angle for i in range(1,rots_count)] # no rotation around z is default
+    self.new_coor_lists = []
+    self.angle_z_list = []
+    for i in range(0, len(rot_angles)):
+        self.new_coor_list = rotate([0,0,1,rot_angles[i]], coor_list)
+        self.new_coor_lists.append(new_coor_list)
+        self.angle_z_list.append(rot_angles[i])
+    return(new_coor_lists, angle_z_list)
+

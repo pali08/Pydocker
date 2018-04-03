@@ -9,7 +9,8 @@ import argparse
 from read_pdb import read_pdb
 from read_pdb import strip_pdb
 from read_bcr_python import read_bcr_header
-from rotate import create_rots
+from rotate import CreateRots
+from rotate import CreateRotsRefine
 from rotate import rotate_around_z
 #from rotate import first_rot
 '''
@@ -83,7 +84,7 @@ def pdb_to_000(*pdb_list_to_000):
     return pdb_list_000, x_range, y_range, z_range
 
 
-def pdb_to_bins(bin_size ,*pdb_list_to_bins):
+def pdb_to_bins(bin_size , *pdb_list_to_bins):
     '''
     this function takes pdb in [[x,y,z],[x,y,z]] format and creates list of format:
     2[[z,z,z,z,z][z,z,z,z,z][z,z,z,z,z][z,z,z,z,z][z,z,z,z,z]] count of internal lists is x range, count of numbers in internal list
@@ -116,7 +117,7 @@ def pdb_to_bins(bin_size ,*pdb_list_to_bins):
     #return pdb_in_bins, count_of_x_strips, count_of_y_strips, pdb_surface
     return pdb_in_bins,pdb_surface
 
-def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z):
+def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, refine = False, ref_angle = None, docker_rough_output = None, ref_line_num=None):
     #print("Creating 2D matrices from bcr file")
     #bcr_header = read_bcr_header(infilename_bcr)
     if (bcr_header['xlength']/bcr_header['xpixels'] - bcr_header['ylength']/bcr_header['ypixels'] < 0.01) and (not(set(("xunit" and "yunit" and "zunit")).issubset(bcr_header))):
@@ -125,7 +126,15 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z):
         print("Pixels must be square.")
         sys.exit()
     print("Rotating pdb and binning.")
-    rots_list, axisangle_list = create_rots(rots_count,coor_list)
+    if(refine == False and (ref_angle is None) and (docker_rough_output is None)):
+        create_rots_object = CreateRots(rots_count, coor_list)
+        rots_list, axisangle_list = create_rots_object.create_rots()
+    elif(refine == True and (ref_angle is not None) and (docker_rough_output is not None)):
+        create_rots_object = CreateRotsRefine(rots_count, coor_list, ref_angle, docker_rough_output)
+        rots_list, axisangle_list = create_rots_object.create_rots()
+    else:
+        print("If doing refinement (switching parameter --refine is used), add refinement angle and line number of output file. If not, do not specify them.")
+        sys.exit()
     pdb_matrices = []
     angles_z = []
     for i in range(0, len(rots_list)):
