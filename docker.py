@@ -38,12 +38,12 @@ def Main():
     parser.add_argument("--rots_count_z", help = "Count of rotations around z axis", type=int, default = 20)
     parser.add_argument("--best_fits_count", help = "Count of rotations in every iteration", type=int, default=20)
     parser.add_argument("--refine", help="If set the refinement is done",action="store_true")
-    parser.add_argument("--ref_angle", help="Angle for refinement",default=None)
-    parser.add_argument("--ref_docker_rough_output", help="Output file for rough docking",default=None)
-    parser.add_argument("--ref_line_num", help="line num from docker_rough_output", default=None)
+    parser.add_argument("--ref_angle", help="Angle for refinement",type=float,default=None)
+    parser.add_argument("--ref_docker_rough_output", help="Output file for rough docking",type=str,default=None)
+    parser.add_argument("--ref_line_num", help="line num from docker_rough_output", type=int,default=None)
     args = parser.parse_args()
     try:
-        compare_and_output(args.pdb_file, args.bcr_file, args.rots_count, args.rots_count_z, args.best_fits_count, args.project_name)
+        compare_and_output(args.pdb_file, args.bcr_file, args.rots_count, args.rots_count_z, args.best_fits_count, args.project_name, args.refine, args.ref_angle, args.ref_docker_rough_output, args.ref_line_num)
     except KeyboardInterrupt:
         print("The program was interrupted by user")
     return()

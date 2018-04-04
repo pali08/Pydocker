@@ -51,30 +51,3 @@ def read_bcr_bin(infilename):
 
 #print(read_bcr_bin("../data/1012_1_crop_2.bcr"))
 
-'''
-def read_bcr_header(infilename):
-    header_dict = {}
-    with open(infilename, encoding='utf-8', errors='ignore') as bcr_file:
-        line_num = 0
-        for line in bcr_file:
-            if (line.startswith(("#","%"))):
-                continue # ignore comments
-            if line.startswith('fileformat'):
-                line_splitted = line.split(sep=" = ")
-                bcr_param = line_splitted[0].strip() # parameter from bcr file
-                bcr_value = line_splitted[1].strip() # value of that parameter
-            if line.startswith(('headersize','xpixels','ypixels','xlength','ylength','current','bias','starttime','scanspeed','intelmode','bit2nm','xoffset','yoffset','voidpixels')):
-                create_bcr_header(line, header_dict)
-    print("Reading header part of bcr file")
-    return(header_dict)
-
-
-# ok, not a bin, but don't wanna rewrite all functions
-def read_bcr_bin(infilename):
-    bcr_array = np.genfromtxt(infilename, skip_header = 12)
-    #highest_point = bcr_array.max()
-    #bcr_array = bcr_array + (1000 - highest_point) #put those 3 lines also in real read bcr bin function
-    print("reading binary part (matrix) from bcr file")
-    return(bcr_array)
-'''
-#read_bcr functions commented out because I need testing function

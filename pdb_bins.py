@@ -117,20 +117,22 @@ def pdb_to_bins(bin_size , *pdb_list_to_bins):
     #return pdb_in_bins, count_of_x_strips, count_of_y_strips, pdb_surface
     return pdb_in_bins,pdb_surface
 
-def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, refine = False, ref_angle = None, docker_rough_output = None, ref_line_num=None):
-    #print("Creating 2D matrices from bcr file")
-    #bcr_header = read_bcr_header(infilename_bcr)
+def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, refine, ref_angle, docker_rough_output, ref_line_num):
     if (bcr_header['xlength']/bcr_header['xpixels'] - bcr_header['ylength']/bcr_header['ypixels'] < 0.01) and (not(set(("xunit" and "yunit" and "zunit")).issubset(bcr_header))):
         bin_size = ((bcr_header['xlength']/bcr_header['xpixels']))
     else:
         print("Pixels must be square.")
         sys.exit()
     print("Rotating pdb and binning.")
-    if(refine == False and (ref_angle is None) and (docker_rough_output is None)):
+    if(refine is False and (ref_angle is None) and (docker_rough_output is None)):
         create_rots_object = CreateRots(rots_count, coor_list)
+        create_rots_object.axisangle_regular()
         rots_list, axisangle_list = create_rots_object.create_rots()
-    elif(refine == True and (ref_angle is not None) and (docker_rough_output is not None)):
-        create_rots_object = CreateRotsRefine(rots_count, coor_list, ref_angle, docker_rough_output)
+    elif(refine is True and (ref_angle is not None) and (docker_rough_output is not None)):
+        create_rots_object = CreateRotsRefine(rots_count, coor_list, ref_angle, docker_rough_output, ref_line_num)
+        create_rots_object.axisangle_regular()
+        create_rots_object.rotate_to_rough_output()
+        create_rots_object.axisangle_regular()
         rots_list, axisangle_list = create_rots_object.create_rots()
     else:
         print("If doing refinement (switching parameter --refine is used), add refinement angle and line number of output file. If not, do not specify them.")

@@ -8,6 +8,8 @@ import transform_coordinates
 import math
 import sys
 from surface3d_demo2 import surface
+import linecache
+import operator
 '''
 def first_rot(x_rotations_count, y_rotations_count, z_rotations_count, pdb_file):
     coord_list = read_pdb(pdb_file)[1]
@@ -78,61 +80,55 @@ def axisangle_regular(points_count, main_ax):
     return(rot_axes, angle_list)
 
 class CreateRots(object):
-    def __init__(self, rots_count,coor_list)
+    def __init__(self, rots_count,coor_list):
         self.rots_count = rots_count
         self.coor_list = coor_list
-        self.rots_count_z = rots_count_z
-    def axisangle_regular(self)
+        self.z_axis = [0.0,0.0,1.0]
+    def axisangle_regular(self):
         self.reg_axes, self.reg_angles = axisangle_regular(self.rots_count,[0.0,0.0,1.0])
         return()
     def create_rots(self):
         self.list_of_all_rots = []
         self.list_of_all_axisangles = []
-        axisangle_regular()
-        self.surface_xyz = []
+        axisangle_regular(self.rots_count, self.z_axis)
+        surface_xyz = []
         self.reg_axisangle = []
         for i in range(0, self.rots_count):
             reg_axisangle = np.append(self.reg_axes[i], self.reg_angles[i])
             rotation = rotate(reg_axisangle, self.coor_list)
             self.list_of_all_rots.append(rotation)
             self.list_of_all_axisangles.append(reg_axisangle)
-            #surface_xyz.append((rotation[0]))
-        #x = np.array([item[0] for item in surface_xyz])
-        #y = np.array([item[1] for item in surface_xyz])
-        #z = np.array([item[2] for item in surface_xyz])
-        #surface(x,y,z)
-        #sys.exit()
-    
+            surface_xyz.append((rotation[0]))
+        x = np.array([item[0] for item in surface_xyz])
+        y = np.array([item[1] for item in surface_xyz])
+        z = np.array([item[2] for item in surface_xyz])
+        surface(x,y,z)
+        sys.exit()
+
         return(self.list_of_all_rots, self.list_of_all_axisangles)
 
-
-    def rotate_around_z(self.rots_count, self.coor_list):
-        angle = (2*np.pi)/self.rots_count
-        rot_angles = [i*angle for i in range(1,rots_count)] # no rotation around z is default
-        self.new_coor_lists = []
-        self.angle_z_list = []
-        for i in range(0, len(rot_angles)):
-            self.new_coor_list = rotate([0,0,1,rot_angles[i]], coor_list)
-            self.new_coor_lists.append(new_coor_list)
-            self.angle_z_list.append(rot_angles[i])
-        return(self.new_coor_lists, self.angle_z_list)
 
 class CreateRotsRefine(CreateRots):
     def __init__(self, rots_count, coor_list, ref_angle, docker_rough_output, ref_line_num):
        CreateRots.__init__(self, rots_count, coor_list) #rots_count = points count on cap
        self.ref_angle = ref_angle
        self.docker_rough_output = docker_rough_output
-       self.z_axis = [0.0,0.0,1.0]
-    
-    def rotate_to_rough_output(self,self.docker_rough_output, self.res_num_to_refine, self.pdb_list):
+       self.ref_line_num = ref_line_num
+       self.z_axis = [0.0,0.0,0.1]
+
+    def rotate_to_rough_output(self):
         line = linecache.getline(self.docker_rough_output, self.ref_line_num)
         self.axisangle = operator.itemgetter(3,4,5,7)(line.split())
+        self.axisangle = list(self.axisangle)
+        for i in range(0,len(self.axisangle)):
+            self.axisangle[i] = float(self.axisangle[i])
         self.angle_z = operator.itemgetter(9)(line.split())
-        self.z_axisangle = [0.0,0.0,0.1,self.z_angle]
-        self.rot_global = transform_coordinates.rotate(self.axisangle, self.pdb_list)
+        self.z_axisangle = [0.0,0.0,0.1,float(self.angle_z)]
+        print(self.z_axisangle, self.coor_list)
+        self.rot_global = transform_coordinates.rotate(self.axisangle, self.coor_list)
         self.coor_list = transform_coordinates.rotate(self.z_axisangle, self.rot_global)
         return()
-        
+
     def get_count_from_angle(self):
         self.whole_count = int((2*self.rots_count)/(1-np.cos(self.ref_angle))) # if I want x points in y degrees around wanted rotation, how many points will be on whole sphere?
         return()
@@ -145,14 +141,14 @@ class CreateRotsRefine(CreateRots):
         radius = np.sqrt(1 - z * z)
 
         self.points = np.zeros((self.rots_count, 3)) #points equaly distributed on sphere
-        self.rot_axes = [[] for i in range(0, len(self.rots_count))]
-        self.agle_list = []
+        self.rot_axes = [[] for i in range(0, self.rots_count)]
+        self.reg_angles = []
         v2_u = self.z_axis / np.linalg.norm(self.z_axis)
         for i in range(0, self.rots_count):
             self.points[i,0] = radius[i] * np.cos(theta[i])
             self.points[i,1] = radius[i] * np.sin(theta[i])
             self.points[i,2] = z[i]
-            self.rot_axes[i] = np.cross(points[i], main_ax)
+            self.rot_axes[i] = np.cross(self.points[i], self.z_axis)
             v1_u = self.points[i] / np.linalg.norm(self.points[i])
             self.reg_angles.append((np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))))
         self.reg_axes = np.array(self.rot_axes)
@@ -163,11 +159,11 @@ class CreateRotsRefine(CreateRots):
 def rotate_around_z(rots_count, coor_list):
     angle = (2*np.pi)/rots_count
     rot_angles = [i*angle for i in range(1,rots_count)] # no rotation around z is default
-    self.new_coor_lists = []
-    self.angle_z_list = []
+    new_coor_lists = []
+    angle_z_list = []
     for i in range(0, len(rot_angles)):
-        self.new_coor_list = rotate([0,0,1,rot_angles[i]], coor_list)
-        self.new_coor_lists.append(new_coor_list)
-        self.angle_z_list.append(rot_angles[i])
+        new_coor_list = rotate([0,0,1,rot_angles[i]], coor_list)
+        new_coor_lists.append(new_coor_list)
+        angle_z_list.append(rot_angles[i])
     return(new_coor_lists, angle_z_list)
 

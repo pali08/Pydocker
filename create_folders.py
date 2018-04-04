@@ -4,7 +4,7 @@ import getpass
 import pathlib
 import sys
 
-class CreateFolder(object)
+class CreateFolder(object):
 
     def __init__(self, project_name, plot_or_text):
         self.project_name = project_name
@@ -29,8 +29,8 @@ class CreateFolder(object)
         pathlib.Path(self.subfolder).mkdir(parents=True, exist_ok=True)
         return(self.subfolder)
 
-class CreateFolderRefine(CreateFolder)
+class CreateFolderRefine(CreateFolder):
     def __init__(self, project_name, plot_or_text, line_num_to_refine):
-        CreateFolder.__init__(project_name, plot_or_text)
-        self.project_name = project_name + "_ref_" + line_num_to_refine
+        CreateFolder.__init__(self,project_name, plot_or_text)
+        self.project_name = project_name + "_ref_" + str(line_num_to_refine)
 
