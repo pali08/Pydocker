@@ -4,6 +4,8 @@ import os
 from read_bcr_python import read_bcr_bin
 from pdb_bins import pdb_rots_to_bins
 from draw_plot import draw_points
+import cv2
+import sys
 
 def find_highest_point(matrix_gethighest):
     prot_array = matrix_gethighest
@@ -33,10 +35,34 @@ def check_surrounding(matrix):
 
 #uprav navratovu hodnotu
 
+def opencv_align(bcr_array,pdb_array):
+
+    bcr = np.array(bcr_array).astype(np.float32)
+    bcr2 = bcr.copy()
+    template = np.array(pdb_array).astype(np.float32)
+    w, h = template.shape[::-1]
+
+    bcr = bcr2.copy()
+
+    # Apply template Matching
+    res = cv2.matchTemplate(bcr,template,1)
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+
+    top_left = min_loc
+    bottom_right = (top_left[0] + w, top_left[1] + h)
+
+    #print(top_left)
+    #print(bottom_right)
+
+    return(top_left)
+
 def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_around_z, refine, ref_angle, docker_rough_output, ref_line_num):
     pdb_matrices, list_of_all_rots, list_of_axisangles, list_of_all_angles_z = pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, refine, ref_angle, docker_rough_output, ref_line_num)
-    bcr_array_shape, bcr_array, ind_max_value_bcr, max_val_bcr = find_highest_point(bcr_array)
-    x_max_bcr, y_max_bcr = ind_max_value_bcr
+
+    bcr_array = np.array(bcr_array)
+    bcr_array_shape = bcr_array.shape
+    max_val_bcr = np.amax(bcr_array) # find highest point in topography
+    #print(bcr_array)
     aligned_matrices = []
     korel_sums = []
     matrices_of_diffs = []
@@ -45,21 +71,24 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         print("Structure has more highest points- results can be distorted")
     print("Aligning pdb matrices to bcr.")
     for k in range(0,len(pdb_matrices)): #iterate trough list of matrices 
-        pdb_array_shape, pdb_array, ind_max_value_pdb, max_val_pdb = find_highest_point(pdb_matrices[k]) # 
-        x_max_pdb, y_max_pdb = ind_max_value_pdb
-        x_hp_dist = x_max_bcr - x_max_pdb
-        y_hp_dist = y_max_bcr - y_max_pdb #distances between indices of highest points
+
+        print(len(pdb_matrices[k][0]))
+        #sys.exit()
+        continue
+        pdb_array = np.array(pdb_matrices[k])
+        pdb_array_shape = pdb_array.shape
+        max_val_pdb = np.amax(pdb_array)
+        kor_sum = 0
+        #print(pdb_array)
+
+        x_dist, y_dist = opencv_align(bcr_array, pdb_array)
         new_pdb_array = np.zeros((bcr_array_shape[0],bcr_array_shape[1])) #new pdb array with shape of bcr array 
         diff_matrix = np.copy(new_pdb_array)
-        #print(new_pdb_array)
-        kor_sum = 0 # set kor_sum to zero and empty shape of 
-        #print(pdb_array_shape[0])
-        #print(pdb_array_shape[1])
         try:
             for i in range(0, pdb_array_shape[0]):
                 for j in range(0, pdb_array_shape[1]):
-                    if(i+x_hp_dist >= 0 and j+y_hp_dist >= 0):
-                        new_pdb_array[i+x_hp_dist][j+y_hp_dist] = pdb_array[i][j]
+                    if(i+x_dist >= 0 and j+y_dist >= 0):
+                        new_pdb_array[i+x_dist][j+y_dist] = pdb_array[i][j]
                     else:
                         raise IndexError("")
             #print(new_pdb_array)
@@ -76,4 +105,4 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         korel_sums.append(kor_sum)
         matrices_of_diffs.append(diff_matrix)
     return(list_of_axisangles, korel_sums, matrices_of_diffs, aligned_matrices, list_of_all_angles_z)
-
+ 

@@ -132,7 +132,7 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, ref
         create_rots_object = CreateRotsRefine(rots_count, coor_list, ref_angle, docker_rough_output, ref_line_num)
         create_rots_object.axisangle_regular()
         create_rots_object.rotate_to_rough_output()
-        create_rots_object.axisangle_regular()
+        #create_rots_object.axisangle_regular()
         rots_list, axisangle_list = create_rots_object.create_rots()
     else:
         print("If doing refinement (switching parameter --refine is used), add refinement angle and line number of output file. If not, do not specify them.")
@@ -143,8 +143,12 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, ref
         pdb_matrix,pdb_surface = pdb_to_bins(bin_size, *rots_list[i])
         pdb_matrices.append(pdb_matrix)
         angles_z.append(0.0)
-        pdb_matrices_ar_z, angle_z_list = rotate_around_z(rots_count_around_z, pdb_surface)
-        pdb_matrices.extend(pdb_matrices_ar_z)
+        pdb_xyz_ar_z, angle_z_list = rotate_around_z(rots_count_around_z, pdb_surface)
+        for k in range(0, len(pdb_xyz_ar_z)):
+            pdb_ar_z_matrix = pdb_to_bins(bin_size, *pdb_xyz_ar_z[k])
+            pdb_matrices.append(pdb_ar_z_matrix)
         angles_z.extend(angle_z_list) 
     return(pdb_matrices, rots_list, axisangle_list, angles_z)
+
+
 

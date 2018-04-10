@@ -55,7 +55,7 @@ def spiral_dist(points_count, main_ax):
     rot_axes = [[] for i in range(0, len(points))]
     for i in range(0, len(points)):
         rot_axes[i] = np.cross(points[i], main_ax)
-    print(rot_axes)
+    #print(rot_axes)
     rot_axes = np.array(rot_axes)
     #surface(points[:,0],points[:,1],points[:,2])
     #sys.exit()
@@ -99,11 +99,11 @@ class CreateRots(object):
             self.list_of_all_rots.append(rotation)
             self.list_of_all_axisangles.append(reg_axisangle)
             surface_xyz.append((rotation[0]))
-        x = np.array([item[0] for item in surface_xyz])
-        y = np.array([item[1] for item in surface_xyz])
-        z = np.array([item[2] for item in surface_xyz])
-        surface(x,y,z)
-        sys.exit()
+        #x = np.array([item[0] for item in surface_xyz])
+        #y = np.array([item[1] for item in surface_xyz])
+        #z = np.array([item[2] for item in surface_xyz])
+        #surface(x,y,z)
+        #sys.exit()
 
         return(self.list_of_all_rots, self.list_of_all_axisangles)
 

@@ -35,17 +35,17 @@ def draw_points(diff_matrix, num_of_graph, subfolder, score, bin_size, pdb_align
 
     fig.suptitle('Correlation score is {0:.3f}'.format(score))
 
-    img1 = ax1.imshow(data)
+    img1 = ax1.imshow(data, cmap='afmhot')
     divider = make_axes_locatable(ax1)
     cax1 = divider.append_axes("right", size="5%", pad=0.05)
     fig.colorbar(img1, cax=cax1)
 
-    img3 = ax3.imshow(data3)
+    img3 = ax3.imshow(data3, cmap='afmhot')
     divider = make_axes_locatable(ax3)
     cax3 = divider.append_axes("right", size="5%", pad=0.05)
     fig.colorbar(img3, cax=cax3)
 
-    img2 = ax2.imshow(data2)
+    img2 = ax2.imshow(data2, cmap='afmhot')
     divider = make_axes_locatable(ax2)
     cax2 = divider.append_axes("right", size="5%", pad=0.05)
     fig.colorbar(img2, cax=cax2)
