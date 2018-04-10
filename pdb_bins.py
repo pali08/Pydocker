@@ -143,8 +143,9 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, ref
         pdb_matrix,pdb_surface = pdb_to_bins(bin_size, *rots_list[i])
         pdb_matrices.append(pdb_matrix)
         angles_z.append(0.0)
-        pdb_matrices_ar_z, angle_z_list = rotate_around_z(rots_count_around_z, pdb_surface)
-        pdb_matrices.extend(pdb_matrices_ar_z)
+        pdb_xyz_ar_z, angle_z_list = rotate_around_z(rots_count_around_z, pdb_surface)
+        for k in range(0, len(pdb_xyz_ar_z)):
+            pdb_ar_z_matrix = pdb_to_bins(bin_size, *pdb_xyz_ar_z[k])
+            pdb_matrices.append(pdb_ar_z_matrix)
         angles_z.extend(angle_z_list) 
     return(pdb_matrices, rots_list, axisangle_list, angles_z)
-
