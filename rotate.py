@@ -124,7 +124,7 @@ class CreateRotsRefine(CreateRots):
             self.axisangle[i] = float(self.axisangle[i])
         self.angle_z = operator.itemgetter(9)(line.split())
         self.z_axisangle = [0.0,0.0,0.1,float(self.angle_z)]
-        print(self.z_axisangle, self.coor_list)
+        #print(self.z_axisangle, self.coor_list)
         self.rot_global = transform_coordinates.rotate(self.axisangle, self.coor_list)
         self.coor_list = transform_coordinates.rotate(self.z_axisangle, self.rot_global)
         return()

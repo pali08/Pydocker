@@ -37,9 +37,11 @@ def check_surrounding(matrix):
 
 def opencv_align(bcr_array,pdb_array):
 
-    bcr = np.array(bcr_array).astype(np.float32)
+    print(bcr_array)
+    print(pdb_array)
+    bcr = bcr_array.astype(np.float32)
     bcr2 = bcr.copy()
-    template = np.array(pdb_array).astype(np.float32)
+    template = pdb_array.astype(np.float32)
     w, h = template.shape[::-1]
 
     bcr = bcr2.copy()
@@ -72,9 +74,9 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
     print("Aligning pdb matrices to bcr.")
     for k in range(0,len(pdb_matrices)): #iterate trough list of matrices 
 
-        print(len(pdb_matrices[k][0]))
+        #print(len(pdb_matrices[k][0]))
         #sys.exit()
-        continue
+        #continue
         pdb_array = np.array(pdb_matrices[k])
         pdb_array_shape = pdb_array.shape
         max_val_pdb = np.amax(pdb_array)
