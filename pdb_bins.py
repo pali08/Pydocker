@@ -132,7 +132,7 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, ref
         create_rots_object = CreateRotsRefine(rots_count, coor_list, ref_angle, docker_rough_output, ref_line_num)
         create_rots_object.axisangle_regular()
         create_rots_object.rotate_to_rough_output()
-        create_rots_object.axisangle_regular()
+        #create_rots_object.axisangle_regular()
         rots_list, axisangle_list = create_rots_object.create_rots()
     else:
         print("If doing refinement (switching parameter --refine is used), add refinement angle and line number of output file. If not, do not specify them.")

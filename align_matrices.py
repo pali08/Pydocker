@@ -51,10 +51,7 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         y_hp_dist = y_max_bcr - y_max_pdb #distances between indices of highest points
         new_pdb_array = np.zeros((bcr_array_shape[0],bcr_array_shape[1])) #new pdb array with shape of bcr array 
         diff_matrix = np.copy(new_pdb_array)
-        #print(new_pdb_array)
         kor_sum = 0 # set kor_sum to zero and empty shape of 
-        #print(pdb_array_shape[0])
-        #print(pdb_array_shape[1])
         try:
             for i in range(0, pdb_array_shape[0]):
                 for j in range(0, pdb_array_shape[1]):
