@@ -10,7 +10,7 @@ import argparse
 #this function deletes empty spaces 
 def strip_pdb(*inp_data):
     output_data = []
-    print((len(inp_data)))
+    #print((len(inp_data)))
     for i in range(0,len(inp_data)):
         for key, value in list(inp_data[i].items()):
             key = key.strip() #delete empty spaces in 
