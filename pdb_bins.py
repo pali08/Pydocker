@@ -99,15 +99,15 @@ def pdb_to_bins(bin_size , *pdb_list_to_bins):
     y_rang = pdb_000_ranges[2]
     z_rang = pdb_000_ranges[3]
 
-    count_of_x_strips = int((x_rang*angstrom2nm) / bin_size)+5 #we put 5 bins more to have some surroundings around molecule
-    count_of_y_strips = int((y_rang*angstrom2nm)/ bin_size)+5
+    count_of_x_strips = int((x_rang*angstrom2nm) / bin_size)+2 #we put 5 bins more to have some surroundings around molecule
+    count_of_y_strips = int((y_rang*angstrom2nm)/ bin_size)+2
     pdb_in_bins = [[0.000 for i in range(count_of_y_strips)] for j in range(count_of_x_strips)]
 
     pdb_surface = [[None for i in range(count_of_y_strips)] for j in range(count_of_x_strips)]
     
     for k in range(0,len(pdb_000)): #iterate trough all atoms
-        x_integerized = int((pdb_000[k][0]*angstrom2nm)/bin_size + 2) # divide x coordinate by bin size and round it to lower number 
-        y_integerized = int((pdb_000[k][1]*angstrom2nm)/bin_size + 2) # - int function just tears numbers after decimal point
+        x_integerized = int((pdb_000[k][0]*angstrom2nm)/bin_size)+1 # divide x coordinate by bin size and round it to lower number 
+        y_integerized = int((pdb_000[k][1]*angstrom2nm)/bin_size)+1 # - int function just tears numbers after decimal point
         if ((abs(pdb_in_bins[x_integerized][y_integerized] - 0.000) < 0.0001) or ((pdb_000[k][2]) > (pdb_in_bins[x_integerized][y_integerized]))): # if z coordinate equals to 0
             pdb_in_bins[x_integerized][y_integerized] = (pdb_000[k][2])*angstrom2nm # add new z coordinate into list
             pdb_surface[x_integerized][y_integerized] = [pdb_000[k][0],pdb_000[k][1],pdb_000[k][2]]
@@ -143,9 +143,7 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, ref
         pdb_matrix,pdb_surface = pdb_to_bins(bin_size, *rots_list[i])
         pdb_matrices.append(pdb_matrix)
         angles_z.append(0.0)
-        pdb_xyz_ar_z, angle_z_list = rotate_around_z(rots_count_around_z, pdb_surface)
-        for k in range(0, len(pdb_xyz_ar_z)):
-            pdb_ar_z_matrix = pdb_to_bins(bin_size, *pdb_xyz_ar_z[k])[0]
-            pdb_matrices.append(pdb_ar_z_matrix)
+        pdb_matrices_ar_z, angle_z_list = rotate_around_z(rots_count_around_z, pdb_matrix)
+        pdb_matrices.extend(pdb_matrices_ar_z)
         angles_z.extend(angle_z_list) 
     return(pdb_matrices, rots_list, axisangle_list, angles_z)

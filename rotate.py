@@ -10,6 +10,7 @@ import sys
 from surface3d_demo2 import surface
 import linecache
 import operator
+import cv2
 '''
 def first_rot(x_rotations_count, y_rotations_count, z_rotations_count, pdb_file):
     coord_list = read_pdb(pdb_file)[1]
@@ -154,16 +155,39 @@ class CreateRotsRefine(CreateRots):
         self.reg_axes = np.array(self.rot_axes)
         return()
 
+def rotate_image(img, angle):
+    mat = img.astype(np.float32)
+    height, width = mat.shape[:2]
+    image_center = (width / 2, height / 2)
 
+    rotation_mat = cv2.getRotationMatrix2D(image_center, angle, 1)
 
-def rotate_around_z(rots_count, coor_list):
-    angle = (2*np.pi)/rots_count
+    radians = math.radians(angle)
+    sin = math.sin(radians)
+    cos = math.cos(radians)
+    bound_w = int((height * abs(sin)) + (width * abs(cos)))
+    bound_h = int((height * abs(cos)) + (width * abs(sin)))
+
+    rotation_mat[0, 2] += ((bound_w / 2) - image_center[0])
+    rotation_mat[1, 2] += ((bound_h / 2) - image_center[1])
+
+    rotated_mat = cv2.warpAffine(mat, rotation_mat, (bound_w, bound_h))
+    _,thresh = cv2.threshold(rotated_mat,1,255,cv2.THRESH_BINARY)
+    _, contours,hierarchy= cv2.startFindContours_Impl(thresh,cv2.RETR_FLOODFILL,cv2.CHAIN_APPROX_SIMPLE)
+    cnt = contours[0]
+    x,y,w,h = cv2.boundingRect(cnt)
+    crop = rotated_mat[y:y+h,x:x+w]
+    return(crop)
+
+def rotate_around_z(rots_count, matrix):
+    angle = 360/rots_count
     rot_angles = [i*angle for i in range(1,rots_count)] # no rotation around z is default
-    new_coor_lists = []
+    new_pdb_mat_z_list = []
     angle_z_list = []
+    matrix=np.array(matrix)
     for i in range(0, len(rot_angles)):
-        new_coor_list = rotate([0,0,1,rot_angles[i]], coor_list)
-        new_coor_lists.append(new_coor_list)
-        angle_z_list.append(rot_angles[i])
-    return(new_coor_lists, angle_z_list)
+        new_pdb_mat_rot_z = rotate_image(matrix, rot_angles[i])
+        new_pdb_mat_z_list.append(new_pdb_mat_rot_z)
+        angle_z_list.append(rot_angles[i]*(np.pi/180))
+    return(new_pdb_mat_z_list, angle_z_list)
 
