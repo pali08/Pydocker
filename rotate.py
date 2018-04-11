@@ -10,6 +10,7 @@ import sys
 from surface3d_demo2 import surface
 import linecache
 import operator
+import cv2
 '''
 def first_rot(x_rotations_count, y_rotations_count, z_rotations_count, pdb_file):
     coord_list = read_pdb(pdb_file)[1]
@@ -156,7 +157,8 @@ class CreateRotsRefine(CreateRots):
 
 
 def rotate_image(img, angle):
-    mat = img.astype(np.float32)
+    #mat = img.astype(np.float32)
+    mat = img
     height, width = mat.shape[:2]
     image_center = (width / 2, height / 2)
 
@@ -172,12 +174,12 @@ def rotate_image(img, angle):
     rotation_mat[1, 2] += ((bound_h / 2) - image_center[1])
 
     rotated_mat = cv2.warpAffine(mat, rotation_mat, (bound_w, bound_h))
-    _,thresh = cv2.threshold(rotated_mat,1,255,cv2.THRESH_BINARY)
-    _, contours,hierarchy= cv2.startFindContours_Impl(thresh,cv2.RETR_FLOODFILL,cv2.CHAIN_APPROX_SIMPLE)
-    cnt = contours[0]
-    x,y,w,h = cv2.boundingRect(cnt)
-    crop = rotated_mat[y:y+h,x:x+w]
-    return(crop)
+    #_,thresh = cv2.threshold(rotated_mat,1,255,cv2.THRESH_BINARY)
+    #_, contours,hierarchy= cv2.startFindContours_Impl(thresh,cv2.RETR_FLOODFILL,cv2.CHAIN_APPROX_SIMPLE)
+    #cnt = contours[0]
+    #x,y,w,h = cv2.boundingRect(cnt)
+    #crop = rotated_mat[y:y+h,x:x+w]
+    return(rotated_mat)
 
 def rotate_around_z(rots_count, matrix):
     angle = 360/rots_count
