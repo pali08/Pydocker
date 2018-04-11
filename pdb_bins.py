@@ -114,6 +114,8 @@ def pdb_to_bins(bin_size , *pdb_list_to_bins):
         else: #if it is smaller continue to next iteration
             continue
     pdb_surface = [it for it in list(np.array(pdb_surface).flatten((np.array(pdb_surface)).all())) if it is not None] #pdb list with surface atoms
+    pdb_in_bins = np.array(pdb_in_bins)
+    pdb_in_bins = pdb_in_bins.astype(np.float64)
     #return pdb_in_bins, count_of_x_strips, count_of_y_strips, pdb_surface
     return pdb_in_bins,pdb_surface
 
@@ -143,10 +145,11 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, ref
         pdb_matrix,pdb_surface = pdb_to_bins(bin_size, *rots_list[i])
         pdb_matrices.append(pdb_matrix)
         angles_z.append(0.0)
-        pdb_xyz_ar_z, angle_z_list = rotate_around_z(rots_count_around_z, pdb_surface)
-        for k in range(0, len(pdb_xyz_ar_z)):
-            pdb_ar_z_matrix = pdb_to_bins(bin_size, *pdb_xyz_ar_z[k])[0]
-            pdb_matrices.append(pdb_ar_z_matrix)
+        pdb_matrices_ar_z, angle_z_list = rotate_around_z(rots_count_around_z, pdb_matrix)
+        pdb_matrices.extend(pdb_matrices_ar_z)
         angles_z.extend(angle_z_list)
-    #print(pdb_matrices)
+        #print(len(pdb_matrices))
+    #for j in range(0,len(pdb_matrices)):
+        #print(len(pdb_matrices[j][0]))
     return(pdb_matrices, rots_list, axisangle_list, angles_z)
+

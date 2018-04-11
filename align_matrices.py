@@ -61,6 +61,8 @@ def opencv_align(bcr_array,pdb_array):
 def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_around_z, refine, ref_angle, docker_rough_output, ref_line_num):
     pdb_matrices, list_of_all_rots, list_of_axisangles, list_of_all_angles_z = pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, refine, ref_angle, docker_rough_output, ref_line_num)
 
+    print(len(pdb_matrices))
+
     bcr_array = np.array(bcr_array)
     bcr_array_shape = bcr_array.shape
     max_val_bcr = np.amax(bcr_array) # find highest point in topography
@@ -78,19 +80,21 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         pdb_array_shape = pdb_array.shape
         max_val_pdb = np.amax(pdb_array)
         kor_sum = 0
-
-        x_dist, y_dist = opencv_align(bcr_array, pdb_array)
+        #print(bcr_array_shape)
+        #print(pdb_array_shape)
+        y_dist, x_dist = opencv_align(bcr_array, pdb_array)
         new_pdb_array = np.zeros((bcr_array_shape[0],bcr_array_shape[1])) #new pdb array with shape of bcr array 
         diff_matrix = np.copy(new_pdb_array)
         try:
             for i in range(0, pdb_array_shape[0]):
                 for j in range(0, pdb_array_shape[1]):
-                    if(i+x_dist >= 0 and j+y_dist >= 0):
-                        new_pdb_array[i+x_dist][j+y_dist] = pdb_array[i][j]
-                    else:
-                        raise IndexError("")
+                    #if(i+x_dist >= 0 and j+y_dist >= 0):
+                    new_pdb_array[i+x_dist][j+y_dist] = pdb_array[i][j]
+                    #else:
+                    #raise IndexError("")
             #print(new_pdb_array)
         except IndexError:
+            print("Index error")
             continue
         new_pdb_array = new_pdb_array + (max_val_bcr - max_val_pdb)
         aligned_matrices.append(new_pdb_array)

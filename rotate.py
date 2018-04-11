@@ -1,3 +1,4 @@
+import random
 import numpy as np
 from transform_coordinates import rotate
 from read_pdb import read_pdb
@@ -157,8 +158,12 @@ class CreateRotsRefine(CreateRots):
 
 
 def rotate_image(img, angle):
+    #print(img.dtype)
     #mat = img.astype(np.float32)
     mat = img
+
+    #rotate:
+
     height, width = mat.shape[:2]
     image_center = (width / 2, height / 2)
 
@@ -174,16 +179,18 @@ def rotate_image(img, angle):
     rotation_mat[1, 2] += ((bound_h / 2) - image_center[1])
 
     rotated_mat = cv2.warpAffine(mat, rotation_mat, (bound_w, bound_h))
-    #_,thresh = cv2.threshold(rotated_mat,1,255,cv2.THRESH_BINARY)
-    #_, contours,hierarchy= cv2.startFindContours_Impl(thresh,cv2.RETR_FLOODFILL,cv2.CHAIN_APPROX_SIMPLE)
-    #cnt = contours[0]
-    #x,y,w,h = cv2.boundingRect(cnt)
-    #crop = rotated_mat[y:y+h,x:x+w]
+
+    #crop black frame:
+
+    rotated_mat_for_crop = rotated_mat.astype(np.uint8)
+    mask = rotated_mat_for_crop > 0
+    rotated_mat = rotated_mat[np.ix_(mask.any(1),mask.any(0))]
     return(rotated_mat)
 
 def rotate_around_z(rots_count, matrix):
     angle = 360/rots_count
     rot_angles = [i*angle for i in range(1,rots_count)] # no rotation around z is default
+    #print(rot_angles)
     new_pdb_mat_z_list = []
     angle_z_list = []
     matrix=np.array(matrix)
@@ -191,6 +198,7 @@ def rotate_around_z(rots_count, matrix):
         new_pdb_mat_rot_z = rotate_image(matrix, rot_angles[i])
         new_pdb_mat_z_list.append(new_pdb_mat_rot_z)
         angle_z_list.append(rot_angles[i]*(np.pi/180))
+    #print(len(new_pdb_mat_z_list))
     return(new_pdb_mat_z_list, angle_z_list)
 
 
