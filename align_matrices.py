@@ -82,7 +82,10 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         kor_sum = 0
         #print(bcr_array_shape)
         #print(pdb_array_shape)
-        y_dist, x_dist = opencv_align(bcr_array, pdb_array)
+        try:
+            y_dist, x_dist = opencv_align(bcr_array, pdb_array)
+        except cv2.error as e:
+            continue
         new_pdb_array = np.zeros((bcr_array_shape[0],bcr_array_shape[1])) #new pdb array with shape of bcr array 
         diff_matrix = np.copy(new_pdb_array)
         try:
