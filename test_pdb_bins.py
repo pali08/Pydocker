@@ -7,11 +7,10 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import os
 import cv2
 import sys
-from pdb_bins import pdb_to_bins
+from pdb_bins_tempor import pdb_to_bins
 from read_pdb import read_pdb
 pdb_list = read_pdb(sys.argv[1])[1]
-pdb_in_bins = pdb_to_bins(float(sys.argv[2]),*pdb_list)[0]
-
+pdb_in_bins = pdb_to_bins(float(sys.argv[2]),*pdb_list)
 def draw_points(diff_matrix):
     plt.switch_backend('agg') #default backend is 'agg' and it can only draw png file. I use 'Qt4Agg' for interactive 3D graph. 
     fig, (ax1) = plt.subplots(ncols=1)

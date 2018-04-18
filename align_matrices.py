@@ -63,6 +63,14 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
 
     print(len(pdb_matrices))
 
+
+    #next section just checks if it aligns to highest point
+    index_of_max_val = np.argmax(bcr_array) # find index of highest point (one value index -in  matrix of size 4x3  [2,0] is 6, [3,1] is 10 etc.- indexing from 0 )
+    array_shape = bcr_array.shape # get shape of array
+    indices_of_max_value = np.unravel_index(index_of_max_val, array_shape) # get index of highest value in 2D matrix from 1num index to 2num index 
+    print(indices_of_max_value)
+    #end of section
+
     bcr_array = np.array(bcr_array)
     bcr_array_shape = bcr_array.shape
     max_val_bcr = np.amax(bcr_array) # find highest point in topography
@@ -79,12 +87,15 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         pdb_array = np.array(pdb_matrices[k])
         pdb_array_shape = pdb_array.shape
         max_val_pdb = np.amax(pdb_array)
+
+        max_val = max_val_bcr - max_val_pdb
         kor_sum = 0
         #print(bcr_array_shape)
         #print(pdb_array_shape)
         try:
             y_dist, x_dist = opencv_align(bcr_array, pdb_array)
         except cv2.error as e:
+            print("Cv2 error")
             continue
         new_pdb_array = np.zeros((bcr_array_shape[0],bcr_array_shape[1])) #new pdb array with shape of bcr array 
         diff_matrix = np.copy(new_pdb_array)
@@ -99,7 +110,15 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         except IndexError:
             print("Index error")
             continue
-        new_pdb_array = new_pdb_array + (max_val_bcr - max_val_pdb)
+        new_pdb_array = new_pdb_array + max_val
+
+        #next section just checks if it aligns to highest point
+        index_of_max_val = np.argmax(new_pdb_array) # find index of highest point (one value index -in  matrix of size 4x3  [2,0] is 6, [3,1] is 10 etc.- indexing from 0 )
+        array_shape = new_pdb_array.shape # get shape of array
+        indices_of_max_value = np.unravel_index(index_of_max_val, array_shape) # get index of highest value in 2D matrix from 1num index to 2num index 
+        print(indices_of_max_value)
+        #end of section
+
         aligned_matrices.append(new_pdb_array)
         for i in range(0, bcr_array_shape[0]):
             for j in range(0, bcr_array_shape[1]):
@@ -110,4 +129,4 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         korel_sums.append(kor_sum)
         matrices_of_diffs.append(diff_matrix)
     return(list_of_axisangles, korel_sums, matrices_of_diffs, aligned_matrices, list_of_all_angles_z)
- 
+

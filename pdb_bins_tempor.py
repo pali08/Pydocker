@@ -102,49 +102,47 @@ def pdb_to_bins(bin_size , *pdb_list_to_bins):
     count_of_x_strips = int(round(((x_rang) / bin_size) + 0.5))+1 #we put 5 bins more to have some surroundings around molecule
     count_of_y_strips = int(round(((y_rang) / bin_size) + 0.5))+1
     pdb_in_bins = [[0.000 for i in range(count_of_x_strips)] for j in range(count_of_y_strips)]
-
+    
     for k in range(0,len(pdb_000)): #iterate trough all atoms
         x_integerized = count_of_y_strips-1-int((pdb_000[k][1])/bin_size) # divide x coordinate by bin size and round it to lower number 
         y_integerized = int((pdb_000[k][0])/bin_size) # - int function just tears numbers after decimal point
-        if ((abs(pdb_in_bins[x_integerized][y_integerized] - 0.000) < 0.0001) or ((pdb_000[k][2]) > (pdb_in_bins[x_integerized][y_integerized]))): #if z coordinate equals to 0
+        if ((abs(pdb_in_bins[x_integerized][y_integerized] - 0.000) < 0.0001) or ((pdb_000[k][2]) > (pdb_in_bins[x_integerized][y_integerized]))): # if z coordinate equals to 0
             pdb_in_bins[x_integerized][y_integerized] = (pdb_000[k][2]) # add new z coordinate into list
         else: #if it is smaller continue to next iteration
             continue
     pdb_in_bins = (np.array(pdb_in_bins))*angstrom2nm
     pdb_in_bins = pdb_in_bins.astype(np.float64)
     return pdb_in_bins
+'''
+def pdb_to_bins(bin_size ,*pdb_list_to_bins):
+	
+	#this function takes pdb in [[x,y,z],[x,y,z]] format and creates list of format:
+	#2[[z,z,z,z,z][z,z,z,z,z][z,z,z,z,z][z,z,z,z,z][z,z,z,z,z]] count of internal lists is x range, count of numbers in internal list
+	#is y range and z is z coordinate
+	
+	print('Creating matrix')
+	pdb_000_ranges = pdb_to_000(*pdb_list_to_bins) #we save all 4 return values to pdb_000_ranges and then assign particular variables
+	
+	pdb_000 = pdb_000_ranges[0]
+	
+	x_rang = pdb_000_ranges[1]
+	y_rang = pdb_000_ranges[2]
+	z_rang = pdb_000_ranges[3]
+	
+		
+	count_of_x_strips = int(x_rang / bin_size)+5 #we put 5 bins more to have some surroundings around molecule
+	count_of_y_strips = int(y_rang / bin_size)+5
+	pdb_in_bins = [[0.000 for i in range(count_of_x_strips)] for j in range(count_of_y_strips)]
 
-def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, refine, ref_angle, docker_rough_output, ref_line_num):
-    if (bcr_header['xlength']/bcr_header['xpixels'] - bcr_header['ylength']/bcr_header['ypixels'] < 0.01) and (not(set(("xunit" and "yunit" and "zunit")).issubset(bcr_header))):
-        bin_size = ((bcr_header['xlength']/bcr_header['xpixels']))
-    else:
-        print("Pixels must be square.")
-        sys.exit()
-    print("Rotating pdb and binning.")
-    if(refine is False and (ref_angle is None) and (docker_rough_output is None)):
-        create_rots_object = CreateRots(rots_count, coor_list)
-        create_rots_object.axisangle_regular()
-        rots_list, axisangle_list = create_rots_object.create_rots()
-    elif(refine is True and (ref_angle is not None) and (docker_rough_output is not None)):
-        create_rots_object = CreateRotsRefine(rots_count, coor_list, ref_angle, docker_rough_output, ref_line_num)
-        create_rots_object.axisangle_regular()
-        create_rots_object.rotate_to_rough_output()
-        #create_rots_object.axisangle_regular()
-        rots_list, axisangle_list = create_rots_object.create_rots()
-    else:
-        print("If doing refinement (switching parameter --refine is used), add refinement angle and line number of output file. If not, do not specify them.")
-        sys.exit()
-    pdb_matrices = []
-    angles_z = []
-    for i in range(0, len(rots_list)):
-        pdb_matrix = pdb_to_bins(bin_size, *rots_list[i])
-        pdb_matrices.append(pdb_matrix)
-        angles_z.append(0.0)
-        pdb_matrices_ar_z, angle_z_list = rotate_around_z(rots_count_around_z, pdb_matrix)
-        pdb_matrices.extend(pdb_matrices_ar_z)
-        angles_z.extend(angle_z_list)
-        #print(len(pdb_matrices))
-    #for j in range(0,len(pdb_matrices)):
-        #print(len(pdb_matrices[j][0]))
-    return(pdb_matrices, rots_list, axisangle_list, angles_z)
+	for k in range(0,len(pdb_000)): #iterate trough all atoms
+		x_integerized = count_of_y_strips-1-int(pdb_000[k][1]/bin_size + 2) # divide x coordinate by bin size and round it to lower number 
+		y_integerized = int(pdb_000[k][0]/bin_size + 2) # - int function just tears numbers after decimal point
+		if (abs(pdb_in_bins[x_integerized][y_integerized] - 0.000) < 0.0001 ): # if z coordinate equals to 0
+			pdb_in_bins[x_integerized][y_integerized] = (pdb_000[k][2])*0.1 # add new z coordinate into list
+		elif (pdb_000[k][2] > pdb_in_bins[x_integerized][y_integerized]): #if it is not equal, try if it is bigger and if yes, put new (highest) value of z coordinate into bin
+			pdb_in_bins[x_integerized][y_integerized] = (pdb_000[k][2])*0.1 
+		else: #if it is smaller continue to next iteration
+			continue 
 
+	return(pdb_in_bins)
+'''
