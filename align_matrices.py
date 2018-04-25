@@ -76,9 +76,9 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
             y_dist, x_dist = opencv_align(bcr_array, pdb_array)
         except cv2.error as e:
             #print("Cv2 error")
-            korel_sum.append(sys.float_info.max)
-            matrices_of_diffs.append(np.full(pdb_array_shape, sys.float_info.max/2))
-            aligned_matrices.append(np.full(pdb_array_shape, sys.float_info.max/2))
+            korel_sums.append(sys.float_info.max)
+            matrices_of_diffs.append(np.full(bcr_array.shape, sys.float_info.max/2))
+            aligned_matrices.append(np.full(bcr_array.shape, sys.float_info.max/2))
             continue
         new_pdb_array = np.zeros((bcr_array.shape[0],bcr_array.shape[1])) #new pdb array with shape of bcr array 
         diff_matrix = np.copy(new_pdb_array)
