@@ -109,5 +109,25 @@ def rotate(axis_angle, coord_list):
         new_xyz = list(new_xyz)
         new_coor_list.append(new_xyz)
     return new_coor_list
-#print(rotate(np.pi/4, "0,1,0", coord_list_a))
-# posun+rotace v jednom kroku. 
+
+def q_to_axisangle(q):
+    imag = q[1:4]
+    real = q[0]
+    quat_abs = np.sqrt((imag[0]**2)+(imag[1]**2)+(imag[2]**2))
+    axis = np.array(imag)/quat_abs
+    angle = 2*np.arctan2(quat_abs, real)
+    axis = list(axis)
+    axis.append(angle)
+    return(axis) # axis+angle
+
+def relative_rot(axis_angle_1, axis_angle_2):
+    def inverse_quat(quat):
+        q_conj = np.array(q_conjugate(quat))
+        q_inv =  np.array(q_conjugate(quat))/np.sqrt(quat[0]**2+quat[1]**2+quat[2]**2+quat[3]**2)
+        return(q_inv)
+    quat1 = axisangle_to_q(axis_angle_1[3], axis_angle_1[:3])
+    inverse_quat1 = inverse_quat(quat1)
+    quat2 = axisangle_to_q(axis_angle_2[3], axis_angle_2[:3])
+    q_result = q_mult(quat2, inverse_quat1)
+    axis_angle = q_to_axisangle(q_result)
+    return(axis_angle)
