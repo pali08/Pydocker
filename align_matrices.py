@@ -96,7 +96,7 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         new_pdb_array = new_pdb_array + max_val
 
         aligned_matrices.append(new_pdb_array)
-        diff_matrix = abs(bcr_array - new_pdb_array)
+        diff_matrix = (abs(bcr_array - new_pdb_array))/bcr_array.size
         kor_sum = diff_matrix.sum()
         korel_sums.append(kor_sum)
         matrices_of_diffs.append(diff_matrix)
