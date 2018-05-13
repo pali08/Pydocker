@@ -124,11 +124,12 @@ class CreateRotsRefine(CreateRots):
         self.axisangle = list(self.axisangle)
         for i in range(0,len(self.axisangle)):
             self.axisangle[i] = float(self.axisangle[i])
-        self.angle_z = operator.itemgetter(9)(line.split())
-        self.z_axisangle = [0.0,0.0,0.1,float(self.angle_z)]
+        #self.angle_z = operator.itemgetter(9)(line.split())
+        #self.z_axisangle = [0.0,0.0,0.1,float(self.angle_z)]
         #print(self.z_axisangle, self.coor_list)
-        self.rot_global = transform_coordinates.rotate(self.axisangle, self.coor_list)
-        self.coor_list = transform_coordinates.rotate(self.z_axisangle, self.rot_global)
+        #self.rot_global = transform_coordinates.rotate(self.axisangle, self.coor_list) pre pripad, zeby sa to posralo
+        #self.coor_list = transform_coordinates.rotate(self.z_axisangle, self.rot_global)
+        self.coor_list = transform_coordinates.rotate(self.axisangle, self.coor_list)
         return()
 
     def get_count_from_angle(self):

@@ -27,7 +27,7 @@ def draw_points(diff_matrix, num_of_graph, subfolder, score, bin_size, pdb_align
     ax.set_zlabel('Z Label')
     ax.set_title('Correlation score is {}'.format(score))
     '''
-    fig, (ax1, ax3, ax2) = plt.subplots(ncols=3)
+    fig, (ax3, ax2, ax1) = plt.subplots(ncols=3)
 
     data = diff_matrix
     data2 = pdb_aligned_matrix
@@ -58,7 +58,7 @@ def draw_points(diff_matrix, num_of_graph, subfolder, score, bin_size, pdb_align
     ax1.set_ylabel("px")
     ax2.set_xlabel("px")
     ax2.set_ylabel("px")
-    ax3.set_xlabel("px \n 1 px = {0:.3f}nm".format(bin_size))
+    ax2.set_xlabel("px \n 1 px = {0:.3f}nm".format(bin_size))
     ax3.set_ylabel("px")
 
     plt.tight_layout(h_pad=1)
@@ -88,7 +88,7 @@ def draw_points(diff_matrix, num_of_graph, subfolder, score, bin_size, pdb_align
     cbar = fig.colorbar(cax, ticks=[-1, 0, 1], orientation='horizontal')
     cbar.ax2.set_xticklabels(['Low', 'Medium', 'High'])  # horizontal colorbar
     '''
-    graph = os.path.join(subfolder, "{0}_graph_{1:02d}.png".format(os.path.split(subfolder)[1], num_of_graph))
+    graph = os.path.join(subfolder, "{0}_graph_{1:02d}.png".format(os.path.split(subfolder)[1], num_of_graph+1))
     plt.savefig(graph)
     plt.close()
     #plt.show()
