@@ -56,6 +56,12 @@ def compare_and_output(infilename_pdb, infilename_bcr, rots_count, rots_count_ar
             axisangle_for_output = transform_coordinates.q_to_axisangle(q_glob_z)
             textoutput.write("score: {0:.3f} axis: {1:.5f} {2:.5f} {3:.5f} angle: {4:.5f} \n".format(cor_sums[ind_best],axisangle_for_output[0],axisangle_for_output[1],axisangle_for_output[2],axisangle_for_output[3]))
             draw_points(diff_matrices[ind_best],i,subfolder_plot,cor_sums[ind_best], pixel_size, aligned_pdb_matrices[ind_best], bcr_array)
+    if (refine == False):
+        with open(os.path.join(subfolder, "{}_text_output_z_indiv.txt".format(project_name)), mode="w+", encoding='utf-8') as textoutput2:
+            for i in range(0, len(best_fits)):
+                ind_best = best_fits[i]
+                glob_rot = ind_best // rots_count_around_z # there are rots_count global * rots_count_around_z rotations we need to know which global rotation give rot_ar_z belongs to
+                textoutput2.write("score: {} axis: {} {} {} angle: {} angle_around_z_coor: {} \n".format(cor_sums[ind_best],axisangles[glob_rot][0],axisangles[glob_rot][1],axisangles[glob_rot][2],axisangles[glob_rot][3], angles_z[ind_best]))
     return(0)
 
 

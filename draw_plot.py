@@ -60,6 +60,7 @@ def draw_points(diff_matrix, num_of_graph, subfolder, score, bin_size, pdb_align
     ax2.set_ylabel("px")
     ax2.set_xlabel("px \n 1 px = {0:.3f}nm".format(bin_size))
     ax3.set_ylabel("px")
+    ax3.set_xlabel("px")
 
     plt.tight_layout(h_pad=1)
 
