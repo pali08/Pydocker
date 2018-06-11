@@ -89,8 +89,8 @@ def draw_points(diff_matrix, num_of_graph, subfolder, score, bin_size, pdb_align
     cbar = fig.colorbar(cax, ticks=[-1, 0, 1], orientation='horizontal')
     cbar.ax2.set_xticklabels(['Low', 'Medium', 'High'])  # horizontal colorbar
     '''
-    graph = os.path.join(subfolder, "{0}_graph_{1:02d}.png".format(os.path.split(subfolder)[1], num_of_graph+1))
-    plt.savefig(graph)
+    graph = pathlib.Path(os.path.join(subfolder, "graph_{02d}.png".format(num_of_graph+1)))
+    plt.savefig(graph, bbox_inches='tight', pad_inches=0)
     plt.close()
     #plt.show()
     return(0)
