@@ -20,6 +20,8 @@ class CreateFolder(object):
             return(1)
         else:
             pathlib.Path(self.project_dir).mkdir(parents=True, exist_ok=True)
+            print(proj_directory)
+            print(type(proj_directory))
             return(proj_directory)
 
     #def create_subfolders(self):
@@ -30,7 +32,7 @@ class CreateFolder(object):
 
 class CreateFolderRefine(CreateFolder):
     def __init__(self, infilename_pdb, infilename_bcr, project_name, line_num_to_refine):
-        CreateFolder.__init__(self,infilename_pdb,infilename_bcr)
+        CreateFolder.__init__(self,infilename_pdb,infilename_bcr, project_name)
         self.line_num = line_num_to_refine
         self.project_name = "{}_in_{}_refinement_{}_{}".format(self.infilename_pdb,self.infilename_bcr,str(self.line_num),project_name)
 

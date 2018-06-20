@@ -31,8 +31,8 @@ def Main():
     #plt.switch_backend('Qt4Agg') 
     pdb = {}
     parser = argparse.ArgumentParser(description='CryoEM-AFM')
-    parser.add_argument("-p","--pdb_files", help = "pdb files to read separated by space", type=str, required=True)
-    parser.add_argument("-b","--bcr_files", help = "bcr files with header of size 2048 character", type=str, required=True) 
+    parser.add_argument("pdb_file", help = "pdb files to read separated by space", type=str)
+    parser.add_argument("bcr_file", help = "bcr files with header of size 2048 character", type=str)
     parser.add_argument("project_name", help = "folder will be created in current directory in folder docker_output", type=str)
     parser.add_argument("--rots_count", help = "Count of rotations equaly distributed on sphere", type=int, default=1000)
     parser.add_argument("--rots_count_z", help = "Count of rotations around z axis", type=int, default = 20)
@@ -43,7 +43,7 @@ def Main():
     parser.add_argument("--ref_line_num", help="line num from docker_rough_output", type=int,default=None)
     args = parser.parse_args()
     try:
-        compare_and_output(args.pdb_files, args.bcr_files, args.rots_count, args.rots_count_z, args.best_fits_count, args.project_name, args.refine, args.ref_angle, args.ref_docker_rough_output, args.ref_line_num)
+        compare_and_output(args.pdb_file, args.bcr_file, args.rots_count, args.rots_count_z, args.best_fits_count, args.project_name, args.refine, args.ref_angle, args.ref_docker_rough_output, args.ref_line_num)
     except KeyboardInterrupt:
         print("The program was interrupted by user")
     return()

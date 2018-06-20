@@ -11,6 +11,7 @@ from create_folders import CreateFolder
 from create_folders import CreateFolderRefine
 import transform_coordinates
 import linecache
+import pathlib
 
 def compare_and_output(infilename_pdb, infilename_bcr, rots_count, rots_count_around_z, best_fits_count,project_name, refine=False, ref_angle=None, docker_rough_output=None, ref_line_num=None):
     bcr_array = np.array(read_bcr_bin(infilename_bcr))
@@ -40,8 +41,8 @@ def compare_and_output(infilename_pdb, infilename_bcr, rots_count, rots_count_ar
         line_cg_axis = [float(line_cg[3]),float(line_cg[4]),float(line_cg[5])]
         line_cg_angle = float(line_cg[7])
         q_cg = transform_coordinates.axisangle_to_q(line_cg_angle,line_cg_axis)
-    with open(pathlib.Path(os.path.join(folder, "text_output.txt")), mode="w+", encoding='utf-8') as textoutput:
-        textoutput.write("Pydocker output\nPdb_file: {}\nBcr file: {}\nGlobal rotations: {}\nZ rotations: {}\nRefinement{}: {}\nRef. line number: {}\nRef. angle: {}\n".format(infilename_pdb, infilename_bcr, rots_count, rots_count_around_z, str(refine), str(ref_line_num), str(ref_angle)))
+    with open(str(pathlib.Path(folder, "text_output.txt")), mode="w+", encoding='utf-8') as textoutput:
+        textoutput.write("Pydocker output\nPdb_file: {}\nBcr file: {}\nGlobal rotations: {}\nZ rotations: {}\nRefinement: {}\nRef. line number: {}\nRef. angle: {}\n".format(infilename_pdb, infilename_bcr, rots_count, rots_count_around_z, str(refine), str(ref_line_num), str(ref_angle)))
         ind_best = 0
         for i in range(0, len(best_fits)):
             ind_best = best_fits[i]

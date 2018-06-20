@@ -57,6 +57,7 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
     pdb_matrices, list_of_all_rots, list_of_axisangles, list_of_all_angles_z = pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, refine, ref_angle, docker_rough_output, ref_line_num)
 
     bcr_array = np.array(bcr_array)
+    #avg_background = sum(np.sum(bcr_array[bcr_array.shape[0]-5:bcr_array.shape[0],bcr_array.shape[1]-5:bcr_array.shape[1]]) + np.sum(bcr_array[bcr_array.shape[0]-5:bcr_array.shape[0],:5) + np.sum(bcr_array[:5,bcr_array.shape[1]-5:bcr_array.shape[1]]) + np.sum(bcr_array[:5,:5]))/100
     #bcr_array_shape = bcr_array.shape
     max_val_bcr = np.amax(bcr_array) # find highest point in topography
     aligned_matrices = []
@@ -101,4 +102,12 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         korel_sums.append(kor_sum)
         matrices_of_diffs.append(diff_matrix)
     return(list_of_axisangles, korel_sums, matrices_of_diffs, aligned_matrices, list_of_all_angles_z)
+'''
+moving image up and down not done yet
 
+or i in range(0,10): # moving pdb up and down (lowest : backgrounds, highest:highest points)
+it = np.nditer(pdb_array, flags=['multi_index'])
+while not it.finished:
+if(not(abs(pdb_array[it.multi_index[0],it.multi_index[1]] - avg_background)<0.0001)):
+pdb_array[it.multi_index[0],it.multi_index[1]] = pdb_array[it.multi_index[0],it.multi_index[1]] + max_val/10*i
+'''
