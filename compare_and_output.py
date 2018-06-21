@@ -13,9 +13,10 @@ import transform_coordinates
 import linecache
 import pathlib
 
-def compare_and_output(infilename_pdb, infilename_bcr, rots_count, rots_count_around_z, best_fits_count,project_name, refine=False, ref_angle=None, docker_rough_output=None, ref_line_num=None):
-    bcr_array = np.array(read_bcr_bin(infilename_bcr))
-    bcr_header = read_bcr_header(infilename_bcr)
+
+def compare_and_output(infilename_pdb, infilename_bcr, rots_count, rots_count_around_z, best_fits_count,project_name, refine=False, autorefine=False, ref_angle=None, docker_rough_output=None, ref_line_num=None):
+    bcr_array = np.array(read_bcr_bin(infilenames_bcr))
+    bcr_header = read_bcr_header(infilenames_bcr)
     if(bcr_header["xlength"] / bcr_header["xpixels"] -  bcr_header["ylength"] / bcr_header["ypixels"] < 0.01):
         pixel_size = bcr_header["xlength"] / bcr_header["xpixels"]
     else:
@@ -64,5 +65,33 @@ def compare_and_output(infilename_pdb, infilename_bcr, rots_count, rots_count_ar
                 textoutput2.write("score: {} axis: {} {} {} angle: {} angle_around_z_coor: {} \n".format(cor_sums[ind_best],axisangles[glob_rot][0],axisangles[glob_rot][1],axisangles[glob_rot][2],axisangles[glob_rot][3], angles_z[ind_best]))
     '''
     return(0)
+
+class CompareAndOutputAll(object):
+    def __init__(self, infilenames_pdb, infilenames_bcr, rots_count, rots_count_around_z, best_fits_count,project_name, refine=False, ref_angle=None, docker_rough_output=None, ref_line_num=None):
+        self.infilenames_pdb = infilenames_pdb
+        self.infilenames_bcr = infilenames_bcr
+        self.rots_count = rots_count
+        self.rots_count_around_z = rots_count_around_z
+        self.best_fits_count = best_fits_count
+        self.project_name = project_name
+        self.refine = refine
+        self.ref_angle = ref_angle
+        self.docker_rough_output = docker_rough_output
+        self.ref_line_num = ref_line_num
+    def __iter__(self):
+        self.index_pdb = 0
+        self.index_bcr = 0
+        return self.index_pdb, self.index_bcr
+    def __next__(self):
+        self.index_pdb += 1
+        if(self.index_pdb >= len(infilenames_pdb)):
+            self.index_bcr += 1
+        if(self.index_bcr >= len(infilename_bcr)):
+            raise StopIteration
+        pdb_iter = iter(self.infilenames_pdb)
+        bcr_iter = iter(self.infilenames_pdb)
+        funcs = compare_and_output(pdb_iter, bcr_iter,self.rots_count,self.rots_count_around_z,self.best_fits_count, self.project_name, self.refine, self.ref_angle, self.docker_rough_output, self.ref_line_num)
+
+
 
 
