@@ -9,7 +9,7 @@ class CreateFolder(object):
     def __init__(self, infilename_pdb, infilename_bcr, project_name):
         self.infilename_pdb = infilename_pdb.split(".")[0]
         self.infilename_bcr = infilename_bcr.split(".")[0]
-        self.project_name = "{}_in_{}_{}".format(self.infilename_pdb,self.infilename_bcr,project_name)
+        self.project_name = "{2}_{0}_IN_{1}".format(self.infilename_pdb,self.infilename_bcr,project_name)
 
     def create_folder(self):
         self.project_dir = os.path.join('pydocker_output',self.project_name)
@@ -34,5 +34,5 @@ class CreateFolderRefine(CreateFolder):
     def __init__(self, infilename_pdb, infilename_bcr, project_name, line_num_to_refine):
         CreateFolder.__init__(self,infilename_pdb,infilename_bcr, project_name)
         self.line_num = line_num_to_refine
-        self.project_name = "{}_in_{}_refinement_{}_{}".format(self.infilename_pdb,self.infilename_bcr,str(self.line_num),project_name)
+        self.project_name = "{3}_refinement_{2}_{0}_IN_{1}".format(self.infilename_pdb,self.infilename_bcr,str(self.line_num),project_name)
 
