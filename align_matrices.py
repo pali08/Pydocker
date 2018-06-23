@@ -55,30 +55,43 @@ def opencv_align(bcr_array,pdb_array):
 
 def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_around_z,scale,refine, ref_angle, docker_rough_output, ref_line_num):
     pdb_matrices, list_of_all_rots, list_of_axisangles, list_of_all_angles_z = pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, refine, ref_angle, docker_rough_output, ref_line_num)
-    def scale_matrices(mat1_pdb, mat2_afm):
+    def get_max_min_range(mat1_pdb, mat2_afm):
         mat1_pdb_max = mat1_pdb.max()
         mat1_pdb_min = mat1_pdb.min()
         mat2_afm_max = mat2_afm.max()
         mat2_afm_min = mat2_afm.min()
-            mat1_pdb = mat2_afm_min + ((mat2_afm_max - mat2_afm_min)*((mat1_pdb-mat1_min)/(mat1_max-mat1_min)))
-        return(mat1_pdb)
+        mat2_afm_range = mat2_afm_max - mat2_afm_min
+        mat1_pdb_range = mat1_afm_max - mat1_afm_min
+        return (mat1_pdb_max, mat1_pdb_min, mat2_afm_max, mat2_afm_min, mat1_pdb_range, mat2_afm_range)
+    def scale_matrices(mat1_pdb, mat2_afm):
+            p1max,p1min,a2max,a2min,p1range,a2range = get_max_min_range(mat1_pdb,mat2_afm)
+            mat1_pdb = a2min + ((a2range)*((mat1_pdb-p1min)/(p1range)))
+        return(mat1_pdb, mat2_afm)
     def move_up_down(mat1_pdb, mat2_afm, best_found_po):
+        p1max,p1min,a2max,a2min,p1range,a2range = get_max_min_range(mat1_pdb,mat2_afm)
         avg_background = sum(np.sum(bcr_array[bcr_array.shape[0]-5:bcr_array.shape[0],bcr_array.shape[1]-5:bcr_array.shape[1]]) + \ 
         np.sum(bcr_array[bcr_array.shape[0]-5:bcr_array.shape[0],:5) + np.sum(bcr_array[:5,bcr_array.shape[1]-5:bcr_array.shape[1]]) + \ 
         np.sum(bcr_array[:5,:5]))/100
         mat1_pdb = mat1_pdb + avg_background # pdb must be with zero backgroud
-        if (mat1_pdb.max-mat1_pdb.min < mat2_afm.max-mat2_afm.min):
-            step = (mat2_afm - mat1_pdb)/10
+        if (p1range < a2range):
+            step = (a2max - p1max)/10
             l = 0
-            score_new = sys.maxsize-1
+            score_new = sys.maxsize-1 # maximal available integer
             score_old = sys.maxsize
             while l < 10 and score_new < score_old:
                 score_old = score_new
                 bol_pdb = abs(mat1_pdb - avg_background) < 0.0001
-                mat1_pdb = mat1_pdb + bol_pdb*l*step # lever up
+                mat1_pdb = mat1_pdb + bol_pdb*l*step # lever up only non background pixels (bol pdb is bolean matrix- 1for pixels > average)
                 score_new,topleft = opencv_align(mat2_afm,mat1_pdb) # after levering up, we need to align
-        if(mat1_pdb.max-mat1_pdb.min > mat2_afm.max-mat2_afm.min)
-                
+        elif (p1range > a2range):
+            step = (p1max - a2max)/10
+            l = 0
+            score_new = sys.maxsize-1
+            score_old = sys.maxsize
+            while l<10 and score_new < score_old:
+                score old = score_new # continue here
+
+
     bcr_array = np.array(bcr_array)
     avg_background = sum(np.sum(bcr_array[bcr_array.shape[0]-5:bcr_array.shape[0],bcr_array.shape[1]-5:bcr_array.shape[1]]) + np.sum(bcr_array[bcr_array.shape[0]-5:bcr_array.shape[0],:5) + np.sum(bcr_array[:5,bcr_array.shape[1]-5:bcr_array.shape[1]]) + np.sum(bcr_array[:5,:5]))/100
     #bcr_array_shape = bcr_array.shape
