@@ -16,24 +16,6 @@ def find_highest_point(matrix_gethighest):
     indices_of_max_value = np.unravel_index(index_of_max_val, array_shape) # get index of highest value in 2D matrix from 1num index to 2num index 
     return(array_shape, prot_array, indices_of_max_value, max_value)
 
-def check_surrounding(matrix):
-    matrix_shape, matrix, ind_max_value, max_value = find_highest_point(matrix)
-    circ_diameter = 5 # is treshold- should play around and set good value
-    x_max = ind_max_value[0]
-    y_max = ind_max_value[1]
-    warning_was_writen = False
-    max_dist = 5.0
-    for i in range(0, matrix_shape[0]):
-        for j in range(0, matrix_shape[1]): #iterate trough all bcr_array
-            if (np.sqrt(((x_max-i)**2)+((y_max-j)**2)) < max_dist): # if value is in circle, do not check it
-                continue
-            elif(matrix[i][j] < matrix[x_max][y_max] - 1.0 ): # 1.0 is treshold- should play around and set good value, 
-                continue #value not in circle but has treshold lesser than we are looking for
-            else: # to write warning only once
-                return 1
-    return 0
-
-#uprav navratovu hodnotu
 
 def opencv_align(bcr_array,pdb_array):
 
@@ -53,48 +35,44 @@ def opencv_align(bcr_array,pdb_array):
 
     return(min_val,top_left)
 
-def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_around_z,scale,refine, ref_angle, docker_rough_output, ref_line_num, up_down_steps_count):
+def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_around_z,scale,refine, ref_angle, docker_rough_output, ref_line_num, up_down_steps_count, cb): # cb is corner background
     pdb_matrices, list_of_all_rots, list_of_axisangles, list_of_all_angles_z = pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, refine, ref_angle, docker_rough_output, ref_line_num)
     bcr_array = np.array(bcr_array)
     mat2_afm_max = bcr_array.max()
     mat2_afm_min = bcr_array.min()
-    mat2_afm_range = mat2_afm_max - mat2_afm_min
+    avg_background = (np.sum(bcr_array[bcr_array.shape[0]-cb:bcr_array.shape[0],bcr_array.shape[1]-cb:bcr_array.shape[1]]) + \
+    np.sum(bcr_array[bcr_array.shape[0]-cb:bcr_array.shape[0],:cb]) + np.sum(bcr_array[:cb,bcr_array.shape[1]-cb:bcr_array.shape[1]]) + \
+    np.sum(bcr_array[:5,:5]))/100
+    mat2_afm_range = mat2_afm_max - avg_background
     def get_max_min_range(mat1_pdb):
         mat1_pdb_max = mat1_pdb.max()
         mat1_pdb_min = mat1_pdb.min()
         mat1_pdb_range = mat1_afm_max - mat1_afm_min
         return (mat1_pdb_max, mat1_pdb_min, mat1_pdb_range)
     def scale_matrices(mat1_pdb):
-            p1max,p1min,p1range = get_max_min_range(mat1_pdb)
-            mat1_pdb = mat2_afm_min + ((mat2_afm_range)*((mat1_pdb-p1min)/(p1range)))
-            opencv_align(bcr_array,mat1_pdb)
-        return(mat1_pdb)
+        p1max,p1min,p1range = get_max_min_range(mat1_pdb)
+        mat1_pdb = avg_background + ((mat2_afm_range)*((mat1_pdb-p1min)/(p1range))) # resp. miesto min tam moze ist average background
+        min_val,top_left = opencv_align(bcr_array,mat1_pdb)
+        return(top_left,mat1_pdb) # p1min will be the 
     def move_up_down(mat1_pdb):
         p1max,p1min,p1range = get_max_min_range(mat1_pdb)
-        avg_background = (np.sum(bcr_array[bcr_array.shape[0]-5:bcr_array.shape[0],bcr_array.shape[1]-5:bcr_array.shape[1]]) + \
-        np.sum(bcr_array[bcr_array.shape[0]-5:bcr_array.shape[0],:5]) + np.sum(bcr_array[:5,bcr_array.shape[1]-5:bcr_array.shape[1]]) + \
-        np.sum(bcr_array[:5,:5]))/100
         mat1_pdb = mat1_pdb + avg_background # pdb must be with zero backgroud
         step = (mat2_afm_max-p1max)/up_down_steps_count
         l = 0
         bol_pdb = abs(mat1_pdb - avg_background) < 0.0001 # all background pixels set to 0 (False), non background px are 1 (true)
         score_new = sys.maxsize-1 # maximal available integer
         score_old = sys.maxsize
-        while l <= up_down_steps and score_new < score_old:
+        while l <= up_down_steps_count and score_new < score_old:
             score_old = score_new
+            mat1_pdb_mov_old = mat1_pdb_mov
             mat1_pdb_mov = mat1_pdb + bol_pdb*l*step # lever up only non background pixels (bol pdb is bolean matrix- 1for pixels > average)
-            score_new,topleft = opencv_align(bcr_array,mat1_pdb) # after levering up, we need to align
-            
+            score_new,top_left = opencv_align(bcr_array,mat1_pdb_mov) # after levering up, we need to align
+            l = l+1
+        return(top_left, mat1_pdb_mov_old) # old pdb will have lower score than new one
 
-
-    avg_background = sum(np.sum(bcr_array[bcr_array.shape[0]-5:bcr_array.shape[0],bcr_array.shape[1]-5:bcr_array.shape[1]]) + np.sum(bcr_array[bcr_array.shape[0]-5:bcr_array.shape[0],:5) + np.sum(bcr_array[:5,bcr_array.shape[1]-5:bcr_array.shape[1]]) + np.sum(bcr_array[:5,:5]))/100
-    #bcr_array_shape = bcr_array.shape
-    max_val_bcr = np.amax(bcr_array) # find highest point in topography
     aligned_matrices = []
     korel_sums = []
     matrices_of_diffs = []
-    if (check_surrounding(bcr_array) == 1):
-        print("Structure has more highest points- results can be distorted")
     print("Aligning pdb matrices to bcr.")
     for k in range(0,len(pdb_matrices)): #iterate trough list of matrices 
 
@@ -103,24 +81,30 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         max_val_pdb = np.amax(pdb_array)
         max_val = max_val_bcr - max_val_pdb
         kor_sum = 0
-        try:
-            y_dist, x_dist = opencv_align(bcr_array, pdb_array)
-        except cv2.error as e:
-            #print("Cv2 error")
-            korel_sums.append(sys.float_info.max)
-            matrices_of_diffs.append(np.full(bcr_array.shape, sys.float_info.max/2))
-            aligned_matrices.append(np.full(bcr_array.shape, sys.float_info.max/2))
-            continue
-        new_pdb_array = np.zeros((bcr_array.shape[0],bcr_array.shape[1])) #new pdb array with shape of bcr array 
+        if scale==True:
+            try:
+                yx_dist, pdb_array = scale_matrices(pdb_array)
+                y_dist, x_dist = yx_dist
+            except cv2.error as e:
+                print("Cv2 error")
+                korel_sums.append(sys.float_info.max)
+                matrices_of_diffs.append(np.full(bcr_array.shape, sys.float_info.max/2))
+                aligned_matrices.append(np.full(bcr_array.shape, sys.float_info.max/2))
+                continue
+        elif (up_down_move == True):
+            try:
+                yx_dist, pdb_array = move_up_down(pdb_array)
+                y_dist, x_dist = yx_dist
+            except cv2.error as e:
+                print("Cv2 error")
+                korel_sums.append(sys.float_info.max)
+                matrices_of_diffs.append(np.full(bcr_array.shape, sys.float_info.max/2))
+                aligned_matrices.append(np.full(bcr_array.shape, sys.float_info.max/2))
+                continue
+        new_pdb_array = np.full((bcr_array.shape[0],bcr_array.shape[1]),average_background) #new pdb array with shape of bcr array 
         diff_matrix = np.copy(new_pdb_array)
         try:
-            #for i in range(0, pdb_array_shape[0]):
-            #for j in range(0, pdb_array_shape[1]):
-            #if(i+x_dist >= 0 and j+y_dist >= 0):
             new_pdb_array[x_dist : x_dist + pdb_array_shape[0], y_dist : y_dist + pdb_array_shape[1]] = pdb_array
-            #else:
-            #raise IndexError("")
-            #print(new_pdb_array)
         except IndexError:
             print("Index error")
             continue
