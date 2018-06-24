@@ -16,7 +16,7 @@ import pathlib
 
 
 class CompareAndOutput(object):
-    def __init__(self, infilenames_pdb, infilenames_bcr, rots_count, rots_count_around_z, best_fits_count,project_name, refine=False, ref_angle=None, docker_rough_output=None, ref_line_num=None):
+    def __init__(self, infilenames_pdb, infilenames_bcr, rots_count, rots_count_around_z, best_fits_count,project_name, refine=False, ref_angle=None, docker_rough_output=None, ref_line_num=None, up_down_steps_count, corner_background, scale):
         self.infilenames_pdb = infilenames_pdb
         self.infilenames_bcr = infilenames_bcr
         self.rots_count = rots_count
@@ -27,6 +27,9 @@ class CompareAndOutput(object):
         self.ref_angle = ref_angle
         self.docker_rough_output = docker_rough_output
         self.ref_line_num = ref_line_num
+        self.up_down_steps_count = up_down_steps_count
+        self.corner_background = corner_background
+        self.scale = scale
  
     def compare_and_output(self, infilename_pdb, infilename_bcr):
         self.infilename_pdb = infilename_pdb
@@ -49,7 +52,7 @@ class CompareAndOutput(object):
             create_folders_object = CreateFolderRefine(self.infilename_pdb, self.infilename_bcr, self.project_name, self.ref_line_num)
         folder = create_folders_object.create_folder()
     
-        axisangles, cor_sums, diff_matrices, aligned_pdb_matrices, angles_z = align_matrices(coor_list, bcr_header, bcr_array, self.rots_count, self.rots_count_around_z, self.refine, self.ref_angle, self.docker_rough_output, self.ref_line_num)
+        axisangles, cor_sums, diff_matrices, aligned_pdb_matrices, angles_z = align_matrices(coor_list, bcr_header, bcr_array, self.rots_count, self.rots_count_around_z, self.refine, self.ref_angle, self.docker_rough_output, self.ref_line_num, self.up_down_steps_count, self.corner_background, self.scale)
         best_fits = np.argsort(cor_sums)[::1][:self.best_fits_count]
         if (self.refine == True):
             line_cg = linecache.getline(self.docker_rough_output,self.ref_line_num).split()

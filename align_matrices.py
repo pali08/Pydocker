@@ -11,9 +11,11 @@ def find_highest_point(matrix_gethighest):
     prot_array = matrix_gethighest
     matrix_gethighest = np.array(matrix_gethighest) # create numpy array
     max_value = np.amax(matrix_gethighest) # find highest point in topography
-    index_of_max_val = np.argmax(matrix_gethighest) # find index of highest point (one value index -in  matrix of size 4x3  [2,0] is 6, [3,1] is 10 etc.- indexing from 0 )
+    index_of_max_val = np.argmax(matrix_gethighest) # find index of highest point (one value index -in matrix
+                                                    #of size 4x3  [2,0] is 6, [3,1] is 10 etc.- indexing from 0 )
     array_shape = matrix_gethighest.shape # get shape of array
-    indices_of_max_value = np.unravel_index(index_of_max_val, array_shape) # get index of highest value in 2D matrix from 1num index to 2num index 
+    indices_of_max_value = np.unravel_index(index_of_max_val, array_shape) # get index of highest value in 2D matrix from 1num index 
+                                                                           #to 2num index 
     return(array_shape, prot_array, indices_of_max_value, max_value)
 
 
@@ -35,7 +37,8 @@ def opencv_align(bcr_array,pdb_array):
 
     return(min_val,top_left)
 
-def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_around_z,scale,refine, ref_angle, docker_rough_output, ref_line_num, up_down_steps_count, cb): # cb is corner background
+def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_around_z,refine, ref_angle, docker_rough_output, ref_line_num, \
+                   up_down_steps_count, cb, scale): # cb is corner background
     pdb_matrices, list_of_all_rots, list_of_axisangles, list_of_all_angles_z = pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, refine, ref_angle, docker_rough_output, ref_line_num)
     bcr_array = np.array(bcr_array)
     mat2_afm_max = bcr_array.max()
@@ -91,7 +94,7 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
                 matrices_of_diffs.append(np.full(bcr_array.shape, sys.float_info.max/2))
                 aligned_matrices.append(np.full(bcr_array.shape, sys.float_info.max/2))
                 continue
-        elif (up_down_move == True):
+        else:
             try:
                 yx_dist, pdb_array = move_up_down(pdb_array)
                 y_dist, x_dist = yx_dist
@@ -116,12 +119,3 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         korel_sums.append(kor_sum)
         matrices_of_diffs.append(diff_matrix)
     return(list_of_axisangles, korel_sums, matrices_of_diffs, aligned_matrices, list_of_all_angles_z)
-'''
-moving image up and down not done yet
-
-or i in range(0,10): # moving pdb up and down (lowest : backgrounds, highest:highest points)
-it = np.nditer(pdb_array, flags=['multi_index'])
-while not it.finished:
-if(not(abs(pdb_array[it.multi_index[0],it.multi_index[1]] - avg_background)<0.0001)):
-pdb_array[it.multi_index[0],it.multi_index[1]] = pdb_array[it.multi_index[0],it.multi_index[1]] + max_val/10*i
-'''
