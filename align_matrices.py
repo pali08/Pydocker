@@ -6,7 +6,7 @@ from pdb_bins import pdb_rots_to_bins
 from draw_plot import draw_points
 import cv2
 import sys
-
+'''
 def find_highest_point(matrix_gethighest):
     prot_array = matrix_gethighest
     matrix_gethighest = np.array(matrix_gethighest) # create numpy array
@@ -18,7 +18,7 @@ def find_highest_point(matrix_gethighest):
                                                                            #to 2num index 
     return(array_shape, prot_array, indices_of_max_value, max_value)
 
-
+'''
 def opencv_align(bcr_array,pdb_array):
 
     bcr = bcr_array.astype(np.float32)
@@ -41,6 +41,7 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
                    up_down_steps_count, cb, scale): # cb is corner background
     pdb_matrices, list_of_all_rots, list_of_axisangles, list_of_all_angles_z = pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, refine, ref_angle, docker_rough_output, ref_line_num)
     bcr_array = np.array(bcr_array)
+    #print(bcr_array)
     mat2_afm_max = bcr_array.max()
     mat2_afm_min = bcr_array.min()
     avg_background = (np.sum(bcr_array[bcr_array.shape[0]-cb:bcr_array.shape[0],bcr_array.shape[1]-cb:bcr_array.shape[1]]) + \
@@ -50,7 +51,7 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
     def get_max_min_range(mat1_pdb):
         mat1_pdb_max = mat1_pdb.max()
         mat1_pdb_min = mat1_pdb.min()
-        mat1_pdb_range = mat1_afm_max - mat1_afm_min
+        mat1_pdb_range = mat1_pdb_max - mat1_pdb_min
         return (mat1_pdb_max, mat1_pdb_min, mat1_pdb_range)
     def scale_matrices(mat1_pdb):
         p1max,p1min,p1range = get_max_min_range(mat1_pdb)
@@ -62,9 +63,11 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         mat1_pdb = mat1_pdb + avg_background # pdb must be with zero backgroud
         step = (mat2_afm_max-p1max)/up_down_steps_count
         l = 0
-        bol_pdb = abs(mat1_pdb - avg_background) < 0.0001 # all background pixels set to 0 (False), non background px are 1 (true)
+        bol_pdb = abs(mat1_pdb - avg_background) > 0.0001 # all background pixels set to 0 (False), non background px are 1 (true)
+        print(bol_pdb)
         score_new = sys.maxsize-1 # maximal available integer
         score_old = sys.maxsize
+        mat1_pdb_mov = mat1_pdb
         while l <= up_down_steps_count and score_new < score_old:
             score_old = score_new
             mat1_pdb_mov_old = mat1_pdb_mov
@@ -82,7 +85,7 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         pdb_array = np.array(pdb_matrices[k])
         pdb_array_shape = pdb_array.shape
         max_val_pdb = np.amax(pdb_array)
-        max_val = max_val_bcr - max_val_pdb
+        #max_val = max_val_bcr - max_val_pdb
         kor_sum = 0
         if scale==True:
             try:
@@ -104,14 +107,14 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
                 matrices_of_diffs.append(np.full(bcr_array.shape, sys.float_info.max/2))
                 aligned_matrices.append(np.full(bcr_array.shape, sys.float_info.max/2))
                 continue
-        new_pdb_array = np.full((bcr_array.shape[0],bcr_array.shape[1]),average_background) #new pdb array with shape of bcr array 
+        new_pdb_array = np.full((bcr_array.shape[0],bcr_array.shape[1]),avg_background) #new pdb array with shape of bcr array 
         diff_matrix = np.copy(new_pdb_array)
         try:
             new_pdb_array[x_dist : x_dist + pdb_array_shape[0], y_dist : y_dist + pdb_array_shape[1]] = pdb_array
         except IndexError:
             print("Index error")
             continue
-        new_pdb_array = new_pdb_array + max_val
+        #new_pdb_array = new_pdb_array + max_val
 
         aligned_matrices.append(new_pdb_array)
         diff_matrix = abs(bcr_array - new_pdb_array)
