@@ -10,7 +10,7 @@ from pdb_bins import pdb_to_bins
 import os
 import pathlib
 import pylab
-def draw_points(diff_matrix, num_of_graph, subfolder, score, bin_size, pdb_aligned_matrix, bcr_matrix):
+def draw_points(diff_matrix, num_of_graph, subfolder, score, bin_size, pdb_aligned_matrix, bcr_matrix, rmsd):
     font = {'size':15}
     matplotlib.rc('font', **font)
 
@@ -49,8 +49,13 @@ def draw_points(diff_matrix, num_of_graph, subfolder, score, bin_size, pdb_align
     cax2 = divider.append_axes("right", size="10%", pad=0.05)
     fig.colorbar(img2, cax=cax2, label="nm", ticks=z_ticks)
 
+    if rmsd==True:
+        score_type = "RMSD"
+    else:
+        score_type = "MAE"
+
     ax1.set_title('Subtracted surfaces')
-    ax2.set_title('Correlation score is {0:.3f}\n\nPDB surface'.format(score))
+    ax2.set_title('{1} score is {0:.3f}\n\nPDB surface'.format(score,score_type))
     ax3.set_title('AFM surface')
 
     ax1.set_xlabel("nm",labelpad=0.005)

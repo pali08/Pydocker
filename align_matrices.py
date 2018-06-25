@@ -38,7 +38,7 @@ def opencv_align(bcr_array,pdb_array):
     return(min_val,top_left)
 
 def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_around_z,refine, ref_angle, docker_rough_output, ref_line_num, \
-                   up_down_steps_count, cb, scale): # cb is corner background
+                   up_down_steps_count, cb, scale,rmsd ,gauss_sigma, boxcar_size): # cb is corner background
     pdb_matrices, list_of_all_rots, list_of_axisangles, list_of_all_angles_z = pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, refine, ref_angle, docker_rough_output, ref_line_num)
     bcr_array = np.array(bcr_array)
     #print(bcr_array)
@@ -114,11 +114,21 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         except IndexError:
             print("Index error")
             continue
-        #new_pdb_array = new_pdb_array + max_val
-
+        if(gauss_sigma is not None):
+            temp_ar = np.full((new_pdb_array.shape[0],new_pdb_array.shape[1]),0)
+            ndimage.gaussian_filter(new_pdb_array, gauss_sigma, order=0, output=temp_ar)
+            new_pdb_array = temp_ar
+        elif(boxcar_size is not None):
+            temp_ar = np.full((new_pdb_array.shape[0],new_pdb_array.shape[1]),0)
+            ndimage.uniform_filter(new_pdb_array, boxcar_size, output=temp_ar)
+            new_pdb_array = temp_ar
         aligned_matrices.append(new_pdb_array)
-        diff_matrix = abs(bcr_array - new_pdb_array)
-        kor_sum = diff_matrix.sum()/bcr_array.size
+        if (rmsd == False):
+            diff_matrix = abs(bcr_array - new_pdb_array)
+            kor_sum = diff_matrix.sum()/bcr_array.size
+        else:
+            diff_matrix = np.sqrt((bcr_array-new_pdb_array)**2)
+            kor_sum = diff_matrix.sum()/np.sqrt(bcr_array.size)
         korel_sums.append(kor_sum)
         matrices_of_diffs.append(diff_matrix)
     return(list_of_axisangles, korel_sums, matrices_of_diffs, aligned_matrices, list_of_all_angles_z)

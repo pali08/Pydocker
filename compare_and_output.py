@@ -16,7 +16,7 @@ import pathlib
 
 
 class CompareAndOutput(object):
-    def __init__(self, infilenames_pdb, infilenames_bcr, rots_count, rots_count_around_z, best_fits_count,project_name, ref_angle, docker_rough_output, ref_line_num, up_down_steps_count, corner_background, scale,refine):
+    def __init__(self, infilenames_pdb, infilenames_bcr, rots_count, rots_count_around_z, best_fits_count,project_name, ref_angle, docker_rough_output, ref_line_num, up_down_steps_count, corner_background, scale,refine, rmsd, gauss_sigma, boxcar_size):
         self.infilenames_pdb = infilenames_pdb
         self.infilenames_bcr = infilenames_bcr
         self.rots_count = rots_count
@@ -30,6 +30,9 @@ class CompareAndOutput(object):
         self.up_down_steps_count = up_down_steps_count
         self.corner_background = corner_background
         self.scale = scale
+        self.rmsd = rmsd
+        self.gauss_sigma = gauss_sigma
+        self.boxcar_size = boxcar_size
  
     def compare_and_output(self, infilename_pdb, infilename_bcr):
         self.infilename_pdb = infilename_pdb
@@ -42,7 +45,10 @@ class CompareAndOutput(object):
             print("Pixel size has to be the same in x and y direction")
             return(1)
             sys.exit()
-    
+        if(self.rmsd==True):
+            score_type = "RMSD"
+        else:
+            score_type = "MAE"
         coor_list = read_pdb(self.infilename_pdb)[1]
         best_fit = coor_list # in first cykle, best fit is default rotation
         list_of_all_rots = []
@@ -52,7 +58,7 @@ class CompareAndOutput(object):
             create_folders_object = CreateFolderRefine(self.infilename_pdb, self.infilename_bcr, self.project_name, self.ref_line_num)
         folder = create_folders_object.create_folder()
     
-        axisangles, cor_sums, diff_matrices, aligned_pdb_matrices, angles_z = align_matrices(coor_list, bcr_header, bcr_array, self.rots_count, self.rots_count_around_z, self.refine, self.ref_angle, self.docker_rough_output, self.ref_line_num, self.up_down_steps_count, self.corner_background, self.scale)
+        axisangles, cor_sums, diff_matrices, aligned_pdb_matrices, angles_z = align_matrices(coor_list, bcr_header, bcr_array, self.rots_count, self.rots_count_around_z, self.refine, self.ref_angle, self.docker_rough_output, self.ref_line_num, self.up_down_steps_count, self.corner_background, self.scale, self.rmsd, self.gauss_sigma, self.boxcar_size)
         best_fits = np.argsort(cor_sums)[::1][:self.best_fits_count]
         if (self.refine == True):
             line_cg = linecache.getline(self.docker_rough_output,self.ref_line_num).split()
@@ -60,7 +66,7 @@ class CompareAndOutput(object):
             line_cg_angle = float(line_cg[7])
             q_cg = transform_coordinates.axisangle_to_q(line_cg_angle,line_cg_axis)
         with open(str(pathlib.Path(folder, "text_output.txt")), mode="w+", encoding='utf-8') as textoutput:
-            textoutput.write("Pydocker output\nPdb_file: {}\nBcr file: {}\nGlobal rotations: {}\nZ rotations: {}\nRefinement: {}\nRef. line number: {}\nRef. angle: {}\n".format(infilename_pdb, infilename_bcr, self.rots_count, self.rots_count_around_z, str(self.refine), str(self.ref_line_num), str(self.ref_angle)))
+            textoutput.write("Pydocker output\nPdb_file: {}\nBcr file: {}\nGlobal rotations: {}\nZ rotations: {}\nRefinement: {}\nRef. line number: {}\nRef. angle: {}\nScore type: {}\n".format(infilename_pdb, infilename_bcr, self.rots_count, self.rots_count_around_z, str(self.refine), str(self.ref_line_num), str(self.ref_angle),score_type))
             ind_best = 0
             for i in range(0, len(best_fits)):
                 ind_best = best_fits[i]
@@ -72,7 +78,7 @@ class CompareAndOutput(object):
                     q_glob_z = transform_coordinates.q_mult(q_glob_z,q_cg)
                 axisangle_for_output = transform_coordinates.q_to_axisangle(q_glob_z)
                 textoutput.write("score: {0:.3f} axis: {1:.5f} {2:.5f} {3:.5f} angle: {4:.5f} \n".format(cor_sums[ind_best],axisangle_for_output[0],axisangle_for_output[1],axisangle_for_output[2],axisangle_for_output[3]))
-                draw_points(diff_matrices[ind_best],i,folder,cor_sums[ind_best], pixel_size, aligned_pdb_matrices[ind_best], bcr_array)
+                draw_points(diff_matrices[ind_best],i,folder,cor_sums[ind_best], pixel_size, aligned_pdb_matrices[ind_best], bcr_array, rmsd)
         '''
         if (refine == False):
             with open(os.path.join(subfolder, "text_output_global_z_indiv.txt"), mode="w+", encoding='utf-8') as textoutput2:

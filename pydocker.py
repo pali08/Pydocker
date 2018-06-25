@@ -44,11 +44,19 @@ def Main():
     parser.add_argument("-u","--up_down_step_move", help="If set, the pdb image will be scaled and not moved up or down", \
                         type=int, default=10)
     parser.add_argument("-s","--scale", help="If set, the pdb image will be scaled and not moved up or down", action="store_true")
+    
+    parser.add_argument("-d","--rmsd", help="If set, score is computed by RMSD, otherwise MAE is used",action="store_true")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("-g","--gauss", help="Blur/stretch image with gaussian filter. Argument is followed with sigma value otherwise 0.5 is used as default", \
+                       type=int, nargs='?', const=0.5, default=None, metavar='PERIOD')
+    group.add_argument("-f","--boxcar", help="Blur/stretch image with boxcar filter. Argument is followed with size of mask otherwise 3 is default (mask size 3x3)", \
+                       type=int, nargs='?', const=3, default=None, metavar='PERIOD')
+    
 
     args = parser.parse_args()
     get_results = CompareAndOutput(args.pdb_files, args.bcr_files, args.rots_count, args.rots_count_z, args.best_fits_count, \
                   args.project_name, args.ref_angle, args.ref_docker_rough_output, args.ref_line_num, \
-                  args.corner_background, args.up_down_step_move, args.scale,args.refine)
+                  args.corner_background, args.up_down_step_move, args.scale,args.refine, args.rmsd, args.gauss, args.boxcar)
     try:
         get_results.compare_and_output_all()
     except KeyboardInterrupt:
