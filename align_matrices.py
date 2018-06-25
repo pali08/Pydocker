@@ -46,7 +46,7 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
     mat2_afm_min = bcr_array.min()
     avg_background = (np.sum(bcr_array[bcr_array.shape[0]-cb:bcr_array.shape[0],bcr_array.shape[1]-cb:bcr_array.shape[1]]) + \
     np.sum(bcr_array[bcr_array.shape[0]-cb:bcr_array.shape[0],:cb]) + np.sum(bcr_array[:cb,bcr_array.shape[1]-cb:bcr_array.shape[1]]) + \
-    np.sum(bcr_array[:5,:5]))/(4*cb*cb)
+    np.sum(bcr_array[:cb,:cb]))/(4*cb*cb)
     mat2_afm_range = mat2_afm_max - avg_background
     def get_max_min_range(mat1_pdb):
         mat1_pdb_max = mat1_pdb.max()
