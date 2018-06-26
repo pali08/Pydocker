@@ -10,7 +10,7 @@ from pdb_bins import pdb_to_bins
 import os
 import pathlib
 import pylab
-def draw_points(diff_matrix, num_of_graph, subfolder, score, bin_size, pdb_aligned_matrix, bcr_matrix, rmsd):
+def draw_points(diff_matrix, num_of_graph, subfolder, score, bin_size, pdb_aligned_matrix, bcr_matrix, rmsd, maxval,minval):
     font = {'size':15}
     matplotlib.rc('font', **font)
 
@@ -27,9 +27,8 @@ def draw_points(diff_matrix, num_of_graph, subfolder, score, bin_size, pdb_align
     data2 = pdb_aligned_matrix
     data3 = bcr_matrix
 
-    maxval = max(diff_matrix.max(),pdb_aligned_matrix.max(),bcr_matrix.max())
-    minval = min(diff_matrix.min(),pdb_aligned_matrix.min(),bcr_matrix.min())
-    #fig.suptitle('Correlation score is {0:.3f}'.format(score), verticalalignment='bottom', pad=0.1, fontsize = 20)
+    #maxval = max(diff_matrix.max(),pdb_aligned_matrix.max(),bcr_matrix.max())
+    #minval = min(diff_matrix.min(),pdb_aligned_matrix.min(),bcr_matrix.min())
 
     z_ticks = np.arange(minval,maxval+1,(maxval-minval)/4)
 

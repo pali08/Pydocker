@@ -68,6 +68,19 @@ class CompareAndOutput(object):
         with open(str(pathlib.Path(folder, "text_output.txt")), mode="w+", encoding='utf-8') as textoutput:
             textoutput.write("Pydocker output\nPdb_file: {}\nBcr file: {}\nGlobal rotations: {}\nZ rotations: {}\nRefinement: {}\nRef. line number: {}\nRef. angle: {}\nScore type: {}\n".format(infilename_pdb, infilename_bcr, self.rots_count, self.rots_count_around_z, str(self.refine), str(self.ref_line_num), str(self.ref_angle),score_type))
             ind_best = 0
+            max_vals_diff = []
+            min_vals_diff = []
+            max_vals_pdb = []
+            min_vals_pdb = []
+            for i in range(0, len(best_fits)):
+                ind_best = best_fits[i]
+                max_vals_diff.append(np.amax(diff_matrices[ind_best]))
+                min_vals_diff.append(np.amin(diff_matrices[ind_best]))
+                max_vals_pdb.append(np.amax(aligned_pdb_matrices[ind_best]))
+                min_vals_pdb.append(np.amin(aligned_pdb_matrices[ind_best]))
+            maxval = max(max(max_vals_diff),max(max_vals_pdb),bcr_array.max())
+            minval = min(min(min_vals_diff),min(min_vals_pdb),bcr_array.min())
+            ind_best = 0
             for i in range(0, len(best_fits)):
                 ind_best = best_fits[i]
                 glob_rot = ind_best // self.rots_count_around_z # there are rots_count global * rots_count_around_z rotations we need to know which global rotation give rot_ar_z belongs to
@@ -78,7 +91,7 @@ class CompareAndOutput(object):
                     q_glob_z = transform_coordinates.q_mult(q_glob_z,q_cg)
                 axisangle_for_output = transform_coordinates.q_to_axisangle(q_glob_z)
                 textoutput.write("score: {0:.3f} axis: {1:.5f} {2:.5f} {3:.5f} angle: {4:.5f} \n".format(cor_sums[ind_best],axisangle_for_output[0],axisangle_for_output[1],axisangle_for_output[2],axisangle_for_output[3]))
-                draw_points(diff_matrices[ind_best],i,folder,cor_sums[ind_best], pixel_size, aligned_pdb_matrices[ind_best], bcr_array, rmsd)
+                draw_points(diff_matrices[ind_best],i,folder,cor_sums[ind_best], pixel_size, aligned_pdb_matrices[ind_best], bcr_array, self.rmsd, maxval,minval)
         '''
         if (refine == False):
             with open(os.path.join(subfolder, "text_output_global_z_indiv.txt"), mode="w+", encoding='utf-8') as textoutput2:

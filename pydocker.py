@@ -48,7 +48,7 @@ def Main():
     parser.add_argument("-d","--rmsd", help="If set, score is computed by RMSD, otherwise MAE is used",action="store_true")
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-g","--gauss", help="Blur/stretch image with gaussian filter. Argument is followed with sigma value otherwise 0.5 is used as default", \
-                       type=int, nargs='?', const=0.5, default=None, metavar='PERIOD')
+                       type=float, nargs='?', const=0.5, default=None, metavar='PERIOD')
     group.add_argument("-f","--boxcar", help="Blur/stretch image with boxcar filter. Argument is followed with size of mask otherwise 3 is default (mask size 3x3)", \
                        type=int, nargs='?', const=3, default=None, metavar='PERIOD')
     

@@ -6,6 +6,7 @@ from pdb_bins import pdb_rots_to_bins
 from draw_plot import draw_points
 import cv2
 import sys
+from scipy import ndimage
 '''
 def find_highest_point(matrix_gethighest):
     prot_array = matrix_gethighest
@@ -64,7 +65,7 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         step = (mat2_afm_max-p1max)/up_down_steps_count
         l = 0
         bol_pdb = abs(mat1_pdb - avg_background) > 0.0001 # all background pixels set to 0 (False), non background px are 1 (true)
-        print(bol_pdb)
+        #print(bol_pdb)
         score_new = sys.maxsize-1 # maximal available integer
         score_old = sys.maxsize
         mat1_pdb_mov = mat1_pdb
@@ -115,13 +116,9 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
             print("Index error")
             continue
         if(gauss_sigma is not None):
-            temp_ar = np.full((new_pdb_array.shape[0],new_pdb_array.shape[1]),0)
-            ndimage.gaussian_filter(new_pdb_array, gauss_sigma, order=0, output=temp_ar)
-            new_pdb_array = temp_ar
+            new_pdb_array = ndimage.gaussian_filter(new_pdb_array, gauss_sigma, order=0)
         elif(boxcar_size is not None):
-            temp_ar = np.full((new_pdb_array.shape[0],new_pdb_array.shape[1]),0)
-            ndimage.uniform_filter(new_pdb_array, boxcar_size, output=temp_ar)
-            new_pdb_array = temp_ar
+            new_pdb_array = ndimage.uniform_filter(new_pdb_array, boxcar_size)
         aligned_matrices.append(new_pdb_array)
         if (rmsd == False):
             diff_matrix = abs(bcr_array - new_pdb_array)
