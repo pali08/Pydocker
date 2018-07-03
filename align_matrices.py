@@ -42,6 +42,11 @@ def opencv_align(bcr_array,pdb_array):
 def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_around_z,refine, ref_angle, docker_rough_output, ref_line_num, \
                    up_down_steps_count, cb, scale,rmsd ,gauss, boxcar_size): # cb is corner background
 
+    def autorefine(first_x_structures, glob_rot_ref, z_rot_ref)
+        cap_surface = 4*np.pi/rots_count
+        angle_ref_glob = 1-(cap_surface/(2*np.pi))
+        angle_ref_z = 2*np.pi / rots_count_z
+    
     avg_background1 = np.sum(bcr_array[bcr_array.shape[0]-cb:bcr_array.shape[0],bcr_array.shape[1]-cb:bcr_array.shape[1]])/cb**2
     avg_background2 = np.sum(bcr_array[bcr_array.shape[0]-cb:bcr_array.shape[0],:cb])/cb**2
     avg_background3 = np.sum(bcr_array[:cb,bcr_array.shape[1]-cb:bcr_array.shape[1]])/cb**2
