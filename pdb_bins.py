@@ -114,7 +114,7 @@ def pdb_to_bins(bin_size , *pdb_list_to_bins):
     pdb_in_bins = pdb_in_bins.astype(np.float64)
     return pdb_in_bins
 
-def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, refine, ref_angle, docker_rough_output, ref_line_num):
+def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, autorefine, rots_count_ref,rots_count_z_refine):
     if (bcr_header['xlength']/bcr_header['xpixels'] - bcr_header['ylength']/bcr_header['ypixels'] < 0.01) and (not(set(("xunit" and "yunit" and "zunit")).issubset(bcr_header))):
         bin_size = ((bcr_header['xlength']/bcr_header['xpixels']))
     else:
@@ -125,8 +125,8 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, ref
         create_rots_object = CreateRots(rots_count, coor_list)
         create_rots_object.axisangle_regular()
         rots_list, axisangle_list = create_rots_object.create_rots()
-    elif(refine is True and (ref_angle is not None) and (docker_rough_output is not None)):
-        create_rots_object = CreateRotsRefine(rots_count, coor_list, ref_angle, docker_rough_output, ref_line_num)
+    elif(autorefine is True and (ref_angle is not None) and (docker_rough_output is not None)):
+        create_rots_object = CreateRotsRefine(rots_count, coor_list, first_x_rots_to_refine)
         create_rots_object.axisangle_regular()
         create_rots_object.rotate_to_rough_output()
         #create_rots_object.axisangle_regular()
