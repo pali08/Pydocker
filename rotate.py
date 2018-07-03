@@ -183,8 +183,10 @@ def rotate_image(img, angle):
 
     #crop black frame:
 
-    rotated_mat_for_crop = rotated_mat.astype(np.uint8)
-    mask = rotated_mat_for_crop > 0
+    #rotated_mat_for_crop = (rotated_mat*1000000000).astype(np.uint8)
+    #rotated_mat_for_crop = (rotated_mat).astype(np.uint8)
+    #rotated_mat_for_crop = np.int8(rotated_mat*1000000000)
+    mask = rotated_mat > 0.01# for zeroes true, for non zeroes false
     rotated_mat = rotated_mat[np.ix_(mask.any(1),mask.any(0))]
     return(rotated_mat)
 
@@ -201,5 +203,4 @@ def rotate_around_z(rots_count, matrix):
         angle_z_list.append(rot_angles[i]*(np.pi/180))
     #print(len(new_pdb_mat_z_list))
     return(new_pdb_mat_z_list, angle_z_list)
-
 

@@ -16,7 +16,7 @@ import pathlib
 
 
 class CompareAndOutput(object):
-    def __init__(self, infilenames_pdb, infilenames_bcr, rots_count, rots_count_around_z, best_fits_count,project_name, ref_angle, docker_rough_output, ref_line_num, up_down_steps_count, corner_background, scale,refine, rmsd, gauss_sigma, boxcar_size):
+    def __init__(self, infilenames_pdb, infilenames_bcr, rots_count, rots_count_around_z, best_fits_count,project_name, ref_angle, docker_rough_output, ref_line_num,  corner_background,up_down_steps_count, scale,refine, rmsd, gauss_sigma, boxcar_size):
         self.infilenames_pdb = infilenames_pdb
         self.infilenames_bcr = infilenames_bcr
         self.rots_count = rots_count

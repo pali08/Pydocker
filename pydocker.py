@@ -4,6 +4,7 @@ import urllib.request, urllib.parse, urllib.error
 import re
 import time
 import argparse
+import sys
 
 #from mpl_toolkits.mplot3d import axes3d
 from mpl_toolkits.mplot3d import Axes3D
@@ -48,7 +49,7 @@ def Main():
     parser.add_argument("-d","--rmsd", help="If set, score is computed by RMSD, otherwise MAE is used",action="store_true")
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-g","--gauss", help="Blur/stretch image with gaussian filter. Argument is followed with sigma value otherwise 0.5 is used as default", \
-                       type=float, nargs='?', const=0.5, default=None, metavar='PERIOD')
+                       type=float, nargs=2, default=[None,None], metavar='PERIOD')
     group.add_argument("-f","--boxcar", help="Blur/stretch image with boxcar filter. Argument is followed with size of mask otherwise 3 is default (mask size 3x3)", \
                        type=int, nargs='?', const=3, default=None, metavar='PERIOD')
     
@@ -57,6 +58,9 @@ def Main():
     get_results = CompareAndOutput(args.pdb_files, args.bcr_files, args.rots_count, args.rots_count_z, args.best_fits_count, \
                   args.project_name, args.ref_angle, args.ref_docker_rough_output, args.ref_line_num, \
                   args.corner_background, args.up_down_step_move, args.scale,args.refine, args.rmsd, args.gauss, args.boxcar)
+    #print(type(args.gauss))
+    #print(args.gauss)
+    #sys.exit()
     try:
         get_results.compare_and_output_all()
     except KeyboardInterrupt:
