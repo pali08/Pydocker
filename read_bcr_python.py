@@ -12,7 +12,7 @@ def create_bcr_header(line, header_dict):
 
 
 def read_bcr_header(infilename):
-    print("Reading header part of bcr file")
+    #print("Reading header part of bcr file")
     header_dict = {}
     with open(infilename, encoding='utf-8', errors='ignore') as bcr_file:
         line_num = 0
@@ -30,7 +30,7 @@ def read_bcr_header(infilename):
 
 
 def read_bcr_bin(infilename):
-    print("reading binary part (matrix) from bcr file")
+    print("Reading binary part of bcr file")
     np.set_printoptions(threshold=np.inf)
     header_dict = read_bcr_header(infilename)
     if (('headersize' not in header_dict) or (header_dict['headersize'] == 2048)):

@@ -20,8 +20,8 @@ class CreateFolder(object):
             return(1)
         else:
             pathlib.Path(self.project_dir).mkdir(parents=True, exist_ok=True)
-            print(proj_directory)
-            print(type(proj_directory))
+            #print(proj_directory)
+            #print(type(proj_directory))
             return(proj_directory)
 
     #def create_subfolders(self):

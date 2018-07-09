@@ -38,6 +38,7 @@ class CompareAndOutput(object):
         self.infilename_pdb = infilename_pdb
         self.infilename_bcr = infilename_bcr
         bcr_array = np.array(read_bcr_bin(self.infilename_bcr))
+        print("Reading header part of BCR file")
         bcr_header = read_bcr_header(self.infilename_bcr)
         if(bcr_header["xlength"] / bcr_header["xpixels"] -  bcr_header["ylength"] / bcr_header["ypixels"] < 0.01):
             pixel_size = bcr_header["xlength"] / bcr_header["xpixels"]

@@ -8,7 +8,7 @@ from read_bcr_python import read_bcr_bin
 import transform_coordinates
 import math
 import sys
-from surface3d_demo2 import surface
+#from surface3d_demo2 import surface
 import linecache
 import operator
 import cv2
