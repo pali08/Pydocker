@@ -111,26 +111,27 @@ class CreateRots(object):
 
 
 class CreateRotsRefine(CreateRots):
-    def __init__(self, rots_count, coor_list, ref_angle, docker_rough_output, ref_line_num):
+    def __init__(self, rots_count, coor_list, rough_dock_output_list_axisangle, how_much_best_rots_to_refine):
        CreateRots.__init__(self, rots_count, coor_list) #rots_count = points count on cap
        self.ref_angle = ref_angle
        self.docker_rough_output = docker_rough_output
        self.ref_line_num = ref_line_num
        self.z_axis = [0.0,0.0,0.1]
 
-    def rotate_to_rough_output(self):
-        line = linecache.getline(self.docker_rough_output, self.ref_line_num)
-        self.axisangle = operator.itemgetter(3,4,5,7)(line.split())
-        self.axisangle = list(self.axisangle)
-        for i in range(0,len(self.axisangle)):
-            self.axisangle[i] = float(self.axisangle[i])
-        #self.angle_z = operator.itemgetter(9)(line.split())
-        #self.z_axisangle = [0.0,0.0,0.1,float(self.angle_z)]
-        #print(self.z_axisangle, self.coor_list)
-        #self.rot_global = transform_coordinates.rotate(self.axisangle, self.coor_list) pre pripad, zeby sa to posralo
-        #self.coor_list = transform_coordinates.rotate(self.z_axisangle, self.rot_global)
-        self.coor_list = transform_coordinates.rotate(self.axisangle, self.coor_list)
+    def rotate_to_rough_output(self): # well this is not optimal, but first we rotated globally, then locally and then we computed the best fit
+        #line = linecache.getline(self.docker_rough_output, self.ref_line_num)
+        #self.axisangle = operator.itemgetter(3,4,5,7)(line.split())
+        #self.axisangle = list(self.axisangle)
+        self.coor_lists = []
+        for j in range(0,how_much_best_rots_to_refine):
+            self.axisangle = self.rough_dock_output_list_axisangle[j]
+            self.coor_list = transform_coordinates.rotate(self.axisangle, self.coor_list)
+            self.coor_lists.append(self.coord_list)
         return()
+    def get_refinement_angle(self):
+        area = 4*np.pi/rots_count # x point for whole sphere, how big area for one point ?
+        #area = 2*np.pi*(1-np.cos(alfa)) area = area- we count angle from it
+        self.ref_angle = np.arccos(1-(2/rots_count))
 
     def get_count_from_angle(self):
         self.whole_count = int((2*self.rots_count)/(1-np.cos(self.ref_angle))) # if I want x points in y degrees around wanted rotation, how many points will be on whole sphere?
@@ -156,7 +157,7 @@ class CreateRotsRefine(CreateRots):
             self.reg_angles.append((np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))))
         self.reg_axes = np.array(self.rot_axes)
         return()
-
+# continue here
 
 def rotate_image(img, angle):
     #print(img.dtype)
@@ -190,9 +191,13 @@ def rotate_image(img, angle):
     rotated_mat = rotated_mat[np.ix_(mask.any(1),mask.any(0))]
     return(rotated_mat)
 
-def rotate_around_z(rots_count, matrix):
-    angle = 360/rots_count
-    rot_angles = [i*angle for i in range(1,rots_count)] # no rotation around z is default
+def rotate_around_z(rots_count, matrix, rots_count_for_refinement=None):
+    if(rots_count_for_refinement is None):
+        angle = 360/rots_count
+        rot_angles = [i*angle for i in range(1,rots_count)] # no rotation around z is default
+    else: # must be type integer osetrene v argparseru 
+        angle = (360/rots_count)/rots_count_for_refinement # both are z rot count ofc
+        rot_angles = [(i*angle) for i in range(-rots_count_for_refinement+1, rots_count_for_refinement)]
     #print(rot_angles)
     new_pdb_mat_z_list = []
     angle_z_list = []
