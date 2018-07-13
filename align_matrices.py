@@ -39,8 +39,10 @@ def opencv_align(bcr_array,pdb_array):
 
     return(min_val,top_left)
 
-def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_around_z,refine, ref_angle, docker_rough_output, ref_line_num, \
-                   up_down_steps_count, cb, scale,rmsd ,gauss, boxcar_size): # cb is corner background
+def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_around_z, docker_rough_output_list=None, \
+                   how_much_best_rots=None, \
+                   glob_rots_refine=None, z_rots_refine=None,up_down_steps_count, \
+                   cb, scale,rmsd ,gauss, boxcar_size): # cb is corner background
 
     def autorefine(first_x_structures, glob_rot_ref, z_rot_ref)
         cap_surface = 4*np.pi/rots_count
@@ -62,7 +64,7 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
         sys.exit()
     #avg_bck_count = 4*cb*cb
     #sys.exit()
-    pdb_matrices, list_of_all_rots, list_of_axisangles, list_of_all_angles_z = pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, refine, ref_angle, docker_rough_output, ref_line_num)
+    pdb_matrices, list_of_all_rots, list_of_axisangles, list_of_all_angles_z = pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, docker_rough_output_list, how_much_best_rots,glob_rots_refine, z_rots_refine)
     bcr_array = np.array(bcr_array)
     #print(bcr_array)
     mat2_afm_max = bcr_array.max()

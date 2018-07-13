@@ -115,7 +115,7 @@ def pdb_to_bins(bin_size , *pdb_list_to_bins):
     return pdb_in_bins
 
 def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, autorefine, \
-                     rough_output,how_much_best, glob_rots_ref, glob_rots_ref_z):
+                     rough_output,how_much_best, glob_rots_ref, rots_ref_z):
     if (bcr_header['xlength']/bcr_header['xpixels'] - bcr_header['ylength']/bcr_header['ypixels'] < 0.01) and (not(set(("xunit" and "yunit" and "zunit")).issubset(bcr_header))):
         bin_size = ((bcr_header['xlength']/bcr_header['xpixels']))
     else:
@@ -129,7 +129,7 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, aut
     elif(autorefine is True and (rough_output is not None) and (how_much_best is not None) and(glob_rots_ref)):
         create_rots_object = CreateRotsRefine(rots_count, coor_list, first_x_rots_to_refine)
         create_rots_object.axisangle_regular()
-        create_rots_object.rotate_to_rough_output()
+        #create_rots_object.rotate_to_rough_output()
         #create_rots_object.axisangle_regular()
         rots_list, axisangle_list = create_rots_object.create_rots()
     else:
@@ -141,7 +141,8 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, aut
         pdb_matrix = pdb_to_bins(bin_size, *rots_list[i])
         pdb_matrices.append(pdb_matrix)
         angles_z.append(0.0)
-        pdb_matrices_ar_z, angle_z_list = rotate_around_z(rots_count_around_z, pdb_matrix)
+        pdb_matrices_ar_z, angle_z_list = rotate_around_z(rots_count_around_z, pdb_matrix, rots_ref_z) # rots_count_around_z are from rough
+                                                                                                       # docking, rots_ref_z are forrefine
         pdb_matrices.extend(pdb_matrices_ar_z)
         angles_z.extend(angle_z_list)
         #print(len(pdb_matrices))

@@ -33,7 +33,7 @@ class CompareAndOutput(object):
         self.rmsd = rmsd
         self.gauss_sigma = gauss_sigma
         self.boxcar_size = boxcar_size
- 
+# continue here- now it should be enough to align matrices once more after all procedures (for thispurpose, put all stuff after align matrices into 1 fcia) 
     def compare_and_output(self, infilename_pdb, infilename_bcr):
         self.infilename_pdb = infilename_pdb
         self.infilename_bcr = infilename_bcr

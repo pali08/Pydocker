@@ -162,8 +162,13 @@ class CreateRotsRefine(CreateRots):
         return()
     def create_rots_for_refinement(self):
         rotate_to_rough_output()
+        self.list_of_all_rots_ref = []
+        self.list_of_all_axisangles_ref = []
         for k in range(0,len(self.coor_lists_new)):
-            self.create_rots(self.coor_lists_new[k])
+            list_of_rots_for_one_r_o, list_of_aa_for_one_r_o = self.create_rots(self.coor_lists_new[k])
+            self.list_of_all_rots_ref.extend(list_of_rots_for_one_r_o)
+            self.list_of_all_axisangles_ref.extend(list_of_aa_for_one_r_o)
+        return(self.list_of_all_rots_ref, self.list_of_all_axisangles_ref)
             
             
 # continue here
