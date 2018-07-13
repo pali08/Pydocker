@@ -114,18 +114,19 @@ def pdb_to_bins(bin_size , *pdb_list_to_bins):
     pdb_in_bins = pdb_in_bins.astype(np.float64)
     return pdb_in_bins
 
-def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, autorefine, rots_count_ref,rots_count_z_refine):
+def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, autorefine, \
+                     rough_output,how_much_best, glob_rots_ref, glob_rots_ref_z):
     if (bcr_header['xlength']/bcr_header['xpixels'] - bcr_header['ylength']/bcr_header['ypixels'] < 0.01) and (not(set(("xunit" and "yunit" and "zunit")).issubset(bcr_header))):
         bin_size = ((bcr_header['xlength']/bcr_header['xpixels']))
     else:
         print("Pixels must be square.")
         sys.exit()
     print("Rotating pdb and binning.")
-    if(refine is False and (ref_angle is None) and (docker_rough_output is None)):
+    if(refine is False and (rough_output is None) and (how_much_best is None) and (glob_rots_ref is None)):
         create_rots_object = CreateRots(rots_count, coor_list)
         create_rots_object.axisangle_regular()
         rots_list, axisangle_list = create_rots_object.create_rots()
-    elif(autorefine is True and (ref_angle is not None) and (docker_rough_output is not None)):
+    elif(autorefine is True and (rough_output is not None) and (how_much_best is not None) and(glob_rots_ref)):
         create_rots_object = CreateRotsRefine(rots_count, coor_list, first_x_rots_to_refine)
         create_rots_object.axisangle_regular()
         create_rots_object.rotate_to_rough_output()

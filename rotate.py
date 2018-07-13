@@ -84,12 +84,12 @@ def axisangle_regular(points_count, main_ax):
 class CreateRots(object):
     def __init__(self, rots_count,coor_list):
         self.rots_count = rots_count
-        self.coor_list = coor_list
         self.z_axis = [0.0,0.0,1.0]
     def axisangle_regular(self):
         self.reg_axes, self.reg_angles = axisangle_regular(self.rots_count,[0.0,0.0,1.0])
         return()
-    def create_rots(self):
+    def create_rots(self, coor_list):
+        self.coor_list = coor_list
         self.list_of_all_rots = []
         self.list_of_all_axisangles = []
         axisangle_regular(self.rots_count, self.z_axis)
@@ -111,8 +111,10 @@ class CreateRots(object):
 
 
 class CreateRotsRefine(CreateRots):
-    def __init__(self, rots_count, coor_list, rough_dock_output_list_axisangle, how_much_best_rots_to_refine):
+    def __init__(self, rots_count, coor_list, rough_dock_output_list_axisangle, how_much_best_rots_to_refine, rots_count_global_refinement):
        CreateRots.__init__(self, rots_count, coor_list) #rots_count = points count on cap
+       self.how_much_best_rots_to_refine = how_much_best_rots_to_refine
+       self.rough_dock_output_list_axisangle = rough_dock_output_list_axisangle
        self.ref_angle = ref_angle
        self.docker_rough_output = docker_rough_output
        self.ref_line_num = ref_line_num
@@ -123,10 +125,10 @@ class CreateRotsRefine(CreateRots):
         #self.axisangle = operator.itemgetter(3,4,5,7)(line.split())
         #self.axisangle = list(self.axisangle)
         self.coor_lists = []
-        for j in range(0,how_much_best_rots_to_refine):
+        for j in range(0,self.how_much_best_rots_to_refine):
             self.axisangle = self.rough_dock_output_list_axisangle[j]
-            self.coor_list = transform_coordinates.rotate(self.axisangle, self.coor_list)
-            self.coor_lists.append(self.coord_list)
+            self.coor_list_new = transform_coordinates.rotate(self.axisangle, self.coor_list)
+            self.coor_lists_new.append(self.coord_list)
         return()
     def get_refinement_angle(self):
         area = 4*np.pi/rots_count # x point for whole sphere, how big area for one point ?
@@ -134,7 +136,8 @@ class CreateRotsRefine(CreateRots):
         self.ref_angle = np.arccos(1-(2/rots_count))
 
     def get_count_from_angle(self):
-        self.whole_count = int((2*self.rots_count)/(1-np.cos(self.ref_angle))) # if I want x points in y degrees around wanted rotation, how many points will be on whole sphere?
+        self.get_refinement_angle()
+        self.whole_count = int((2*self.rots_count_global_refinement)/(1-np.cos(self.ref_angle))) # if I want x points in y degrees around wanted rotation, how many points will be on whole sphere?
         return()
 
     def axisangle_regular(self): #override parent method
@@ -157,6 +160,12 @@ class CreateRotsRefine(CreateRots):
             self.reg_angles.append((np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))))
         self.reg_axes = np.array(self.rot_axes)
         return()
+    def create_rots_for_refinement(self):
+        rotate_to_rough_output()
+        for k in range(0,len(self.coor_lists_new)):
+            self.create_rots(self.coor_lists_new[k])
+            
+            
 # continue here
 
 def rotate_image(img, angle):
