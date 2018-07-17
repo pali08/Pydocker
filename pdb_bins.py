@@ -127,16 +127,17 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, aut
         create_rots_object.axisangle_regular()
         rots_list, axisangle_list = create_rots_object.create_rots()
     elif(autorefine is True and (rough_output is not None) and (how_much_best is not None) and(glob_rots_ref)):
-        create_rots_object = CreateRotsRefine(rots_count, coor_list, first_x_rots_to_refine)
+        create_rots_object = CreateRotsRefine(rots_count, coor_list, rough_output, how_much_best, glob_rots_ref, rots_ref_z)
         create_rots_object.axisangle_regular()
         #create_rots_object.rotate_to_rough_output()
         #create_rots_object.axisangle_regular()
-        rots_list, axisangle_list = create_rots_object.create_rots()
+        rots_list, axisangle_list = create_rots_object.create_rots_for_refinement()
     else:
         print("If doing refinement (switching parameter --refine is used), add refinement angle and line number of output file. If not, do not specify them.")
         sys.exit()
     pdb_matrices = []
     angles_z = []
+    axisangles_complete = []
     for i in range(0, len(rots_list)):
         pdb_matrix = pdb_to_bins(bin_size, *rots_list[i])
         pdb_matrices.append(pdb_matrix)
@@ -145,8 +146,14 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, aut
                                                                                                        # docking, rots_ref_z are forrefine
         pdb_matrices.extend(pdb_matrices_ar_z)
         angles_z.extend(angle_z_list)
+        q_global = transform_coordinates.axisangle_to_q(axisangle_list[i][3],[axisangle_list[i][0],axisangle_list[i][1],axisangle_list[i][2]])
+        axisangles_complete.apend(axisangle_list)
+        for j in range(0, len(angle_z_list)):
+            q_z = transform_coordinates.axisangle_to_q(angle_z_list[i],[0,0,1])
+            q_glob_z = transform_coordinates.q_mult(q_z,q_global)
+            axisangles_complete.append(q_to_axisangle(g_glob_z))
         #print(len(pdb_matrices))
     #for j in range(0,len(pdb_matrices)):
         #print(len(pdb_matrices[j][0]))
-    return(pdb_matrices, rots_list, axisangle_list, angles_z)
+    return(pdb_matrices, rots_list, axisangle_list, angles_z, axisangles_complete)
 

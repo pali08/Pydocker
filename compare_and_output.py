@@ -58,8 +58,27 @@ class CompareAndOutput(object):
             create_folders_object = CreateFolderRefine(self.infilename_pdb, self.infilename_bcr, self.project_name, self.ref_line_num)
         folder = create_folders_object.create_folder()
     
-        axisangles, cor_sums, diff_matrices, aligned_pdb_matrices, angles_z = align_matrices(coor_list, bcr_header, bcr_array, self.rots_count, self.rots_count_around_z, self.refine, self.ref_angle, self.docker_rough_output, self.ref_line_num, self.up_down_steps_count, self.corner_background, self.scale, self.rmsd, self.gauss_sigma, self.boxcar_size)
-        best_fits = np.argsort(cor_sums)[::1][:self.best_fits_count]
+        axisangles, cor_sums, diff_matrices, aligned_pdb_matrices, angles_z, axisangles_complete = align_matrices(coor_list, bcr_header, bcr_array, self.rots_count, self.rots_count_around_z, \
+                                                                                             rough_output_list=None, \
+                                                                                             self.how_much_best_rots, self.glob_rots_refine, self.z_rots_refine, \
+                                                                                             self.up_down_steps_count, self.corner_background, self.scale, \
+                                                                                             self.rmsd, self.gauss_sigma, self.boxcar_size)
+        
+        if(self.autorefine is True):
+            best_fits_for_ref = np.argsort(cor_sums)[::1][:len(cor_sums)]
+            axisangles_complete_for_ref = []
+            for l in range(0, len(cor_sums)):
+                index_for_ref = best_fits_for_ref[l]
+                axisangles_complete_for_ref.append(axisangles_complete[index_for_ref])
+            axisangles_ref, cor_sums_ref, diff_matrices_ref, aligned_pdb_matrices_ref, angles_z_ref, axisangles_complete_ref = align_matrices(coor_list, bcr_header, bcr_array, \
+                                                                                                                                              self.rots_count, self.rots_count_around_z, \
+                                                                                                                                              axisangles_complete_for_ref, \
+                                                                                                                                              self.how_much_best_rots, \
+                                                                                                                                              self.glob_rots_ref, \
+                                                                                                                                              self.z_rots_refine, \
+                                                                                                                                              self.up_down_steps_count, self.corner_background, self.scale, \
+                                                                                                                                              self.rmsd, self.gauss_sigma, self.boxcar_size)
+            # pokracuj- axisangles append axisangles_ref (predtym ale skombinuj rough output a refinement), dalej v compare and output uprav vstupy 
         if (self.refine == True):
             line_cg = linecache.getline(self.docker_rough_output,self.ref_line_num).split()
             line_cg_axis = [float(line_cg[3]),float(line_cg[4]),float(line_cg[5])]

@@ -112,13 +112,11 @@ class CreateRots(object):
 
 class CreateRotsRefine(CreateRots):
     def __init__(self, rots_count, coor_list, rough_dock_output_list_axisangle, how_much_best_rots_to_refine, rots_count_global_refinement):
-       CreateRots.__init__(self, rots_count, coor_list) #rots_count = points count on cap
-       self.how_much_best_rots_to_refine = how_much_best_rots_to_refine
-       self.rough_dock_output_list_axisangle = rough_dock_output_list_axisangle
-       self.ref_angle = ref_angle
-       self.docker_rough_output = docker_rough_output
-       self.ref_line_num = ref_line_num
-       self.z_axis = [0.0,0.0,0.1]
+        CreateRots.__init__(self, rots_count, coor_list) #rots_count = points count on cap
+        self.how_much_best_rots_to_refine = how_much_best_rots_to_refine
+        self.rough_dock_output_list_axisangle = rough_dock_output_list_axisangle 
+        self.rots_count_global_refinement = rots_count_global_refinement
+        self.z_axis = [0.0,0.0,0.1]
 
     def rotate_to_rough_output(self): # well this is not optimal, but first we rotated globally, then locally and then we computed the best fit
         #line = linecache.getline(self.docker_rough_output, self.ref_line_num)
@@ -161,7 +159,7 @@ class CreateRotsRefine(CreateRots):
         self.reg_axes = np.array(self.rot_axes)
         return()
     def create_rots_for_refinement(self):
-        rotate_to_rough_output()
+        selfTrotate_to_rough_output()
         self.list_of_all_rots_ref = []
         self.list_of_all_axisangles_ref = []
         for k in range(0,len(self.coor_lists_new)):
