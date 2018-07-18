@@ -16,16 +16,18 @@ import pathlib
 
 
 class CompareAndOutput(object):
-    def __init__(self, infilenames_pdb, infilenames_bcr, rots_count, rots_count_around_z, best_fits_count,project_name, ref_angle, docker_rough_output, ref_line_num,  corner_background,up_down_steps_count, scale,refine, rmsd, gauss_sigma, boxcar_size):
+    def __init__(self, infilenames_pdb, infilenames_bcr, rots_count, rots_count_around_z, best_fits_count,project_name, autorefine, how_much_best, rots_count_glob_ref,rots_count_z_ref,\
+                 docker_rough_output, ref_line_num,  corner_background,up_down_steps_count, scale,refine, rmsd, gauss_sigma, boxcar_size):
         self.infilenames_pdb = infilenames_pdb
         self.infilenames_bcr = infilenames_bcr
         self.rots_count = rots_count
         self.rots_count_around_z = rots_count_around_z
         self.best_fits_count = best_fits_count
         self.project_name = project_name
-        self.refine = refine
-        self.ref_angle = ref_angle
-        self.docker_rough_output = docker_rough_output
+        self.autorefine = autorefine
+        self.how_much_best = how_much_best
+        self.rots_count_glob_ref = rots_count_glob_ref
+        self.rots_count_z_ref = rots_count_z_ref 
         self.ref_line_num = ref_line_num
         self.up_down_steps_count = up_down_steps_count
         self.corner_background = corner_background
@@ -65,25 +67,32 @@ class CompareAndOutput(object):
                                                                                              self.rmsd, self.gauss_sigma, self.boxcar_size)
         
         if(self.autorefine is True):
+            for i in range(0,self.how_much_best_rots*self.glob_rots_ref*self.z_rots_refine):
+                rough_outputs_list.append(i//self.glob_rots_ref*self.z_rots_refine) # e.g. if have 5 rough outputs with 2*3 rots, then first 6 rots should be 0 etc.
             best_fits_for_ref = np.argsort(cor_sums)[::1][:len(cor_sums)]
             axisangles_complete_for_ref = []
-            for l in range(0, len(cor_sums)):
+            rough_outputs_sorted = []
+            for l in range(0, len(how_much_best_rots)):
                 index_for_ref = best_fits_for_ref[l]
-                axisangles_complete_for_ref.append(axisangles_complete[index_for_ref])
+                axisangles_complete_for_ref.append(axisangles_complete[index_for_ref]) 
+                rough_outputs_sorted.append(rough_output_list[index_for_ref])
             axisangles_ref, cor_sums_ref, diff_matrices_ref, aligned_pdb_matrices_ref, angles_z_ref, axisangles_complete_ref = align_matrices(coor_list, bcr_header, bcr_array, \
                                                                                                                                               self.rots_count, self.rots_count_around_z, \
                                                                                                                                               axisangles_complete_for_ref, \
                                                                                                                                               self.how_much_best_rots, \
                                                                                                                                               self.glob_rots_ref, \
                                                                                                                                               self.z_rots_refine, \
-                                                                                                                                              self.up_down_steps_count, self.corner_background, self.scale, \
+                                                                                                                                              self.up_down_steps_count, self.corner_background, \
+                                                                                                                                              self.scale, \
                                                                                                                                               self.rmsd, self.gauss_sigma, self.boxcar_size)
+            for m in range(0, len(axisangles_complete_ref)):
+                 axisangles_combined_with_rough.append(combine_two_axisangles(axisangles_complete[rough_outputs_sorted[m]], axisangles_complete_ref[m]))
+            axisangles.extend(axisangles_ref)
+            cor_sums.extend(cor_sums_ref)
+            diff_matrices.extend(diff_matrices_ref)
+            aligned_pdb_matrices.extend(aligned_pdb_matrices_ref)
+            best_fits = np.argsort(cor_sums)[::1][:len(cor_sums)]            
             # pokracuj- axisangles append axisangles_ref (predtym ale skombinuj rough output a refinement), dalej v compare and output uprav vstupy 
-        if (self.refine == True):
-            line_cg = linecache.getline(self.docker_rough_output,self.ref_line_num).split()
-            line_cg_axis = [float(line_cg[3]),float(line_cg[4]),float(line_cg[5])]
-            line_cg_angle = float(line_cg[7])
-            q_cg = transform_coordinates.axisangle_to_q(line_cg_angle,line_cg_axis)
         with open(str(pathlib.Path(folder, "text_output.txt")), mode="w+", encoding='utf-8') as textoutput:
             textoutput.write("Pydocker output\nPdb_file: {}\nBcr file: {}\nGlobal rotations: {}\nZ rotations: {}\nRefinement: {}\nRef. line number: {}\nRef. angle: {}\nScore type: {}\n".format(infilename_pdb, infilename_bcr, self.rots_count, self.rots_count_around_z, str(self.refine), str(self.ref_line_num), str(self.ref_angle),score_type))
             ind_best = 0
@@ -102,23 +111,10 @@ class CompareAndOutput(object):
             ind_best = 0
             for i in range(0, len(best_fits)):
                 ind_best = best_fits[i]
-                glob_rot = ind_best // self.rots_count_around_z # there are rots_count global * rots_count_around_z rotations we need to know which global rotation give rot_ar_z belongs to
-                q_global = transform_coordinates.axisangle_to_q(axisangles[glob_rot][3],[axisangles[glob_rot][0],axisangles[glob_rot][1],axisangles[glob_rot][2]])
-                q_z = transform_coordinates.axisangle_to_q(angles_z[ind_best],[0,0,1])
-                q_glob_z = transform_coordinates.q_mult(q_z,q_global)
-                if(self.refine == True):
-                    q_glob_z = transform_coordinates.q_mult(q_glob_z,q_cg)
-                axisangle_for_output = transform_coordinates.q_to_axisangle(q_glob_z)
+                axisangle_for_output = axisangles[ind_best]
                 textoutput.write("score: {0:.3f} axis: {1:.5f} {2:.5f} {3:.5f} angle: {4:.5f} \n".format(cor_sums[ind_best],axisangle_for_output[0],axisangle_for_output[1],axisangle_for_output[2],axisangle_for_output[3]))
                 draw_points(diff_matrices[ind_best],i,folder,cor_sums[ind_best], pixel_size, aligned_pdb_matrices[ind_best], bcr_array, self.rmsd, maxval,minval)
-        '''
-        if (refine == False):
-            with open(os.path.join(subfolder, "text_output_global_z_indiv.txt"), mode="w+", encoding='utf-8') as textoutput2:
-                for i in range(0, len(best_fits)):
-                    ind_best = best_fits[i]
-                    glob_rot = ind_best // rots_count_around_z # there are rots_count global * rots_count_around_z rotations we need to know which global rotation give rot_ar_z belongs to
-                    textoutput2.write("score: {} axis: {} {} {} angle: {} angle_around_z_coor: {} \n".format(cor_sums[ind_best],axisangles[glob_rot][0],axisangles[glob_rot][1],axisangles[glob_rot][2],axisangles[glob_rot][3], angles_z[ind_best]))
-        '''
+    
     def compare_and_output_all(self):
         
         for p in self.infilenames_pdb:

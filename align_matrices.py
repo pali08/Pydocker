@@ -132,11 +132,6 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
             pdb_array = cv2.boxFilter(pdb_array_with_surroundings,ksize=(boxcar_size,boxcar_size),borderType=cv2.BORDER_CONSTANT, ddepth=-1)
             draw_points_test(pdb_array,"{}_poboxcar".format(str(k)))
             #cropp
-            #mat_for_crop = (1000000000*pdb_array).astype(np.uint8)
-            #mask = pdb_array > 0.0001 # for zeroes true, for non zeroes false
-            #draw_points_test(mask,"{}_maska_furttonejde.png".format(str(k)))
-            #mask = mask*100
-            #pdb_array = pdb_array[np.ix_(mask.any(1),mask.any(0))]
 
         pdb_array_shape = pdb_array.shape
         max_val_pdb = np.amax(pdb_array)

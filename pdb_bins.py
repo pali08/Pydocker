@@ -115,7 +115,7 @@ def pdb_to_bins(bin_size , *pdb_list_to_bins):
     return pdb_in_bins
 
 def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, autorefine, \
-                     rough_output,how_much_best, glob_rots_ref, rots_ref_z):
+                     rough_output, rough_output_unsorted,how_much_best, glob_rots_ref, rots_ref_z):
     if (bcr_header['xlength']/bcr_header['xpixels'] - bcr_header['ylength']/bcr_header['ypixels'] < 0.01) and (not(set(("xunit" and "yunit" and "zunit")).issubset(bcr_header))):
         bin_size = ((bcr_header['xlength']/bcr_header['xpixels']))
     else:
@@ -152,6 +152,9 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, aut
             q_z = transform_coordinates.axisangle_to_q(angle_z_list[i],[0,0,1])
             q_glob_z = transform_coordinates.q_mult(q_z,q_global)
             axisangles_complete.append(q_to_axisangle(g_glob_z))
+            if(autorefine is True):
+                
+                axisangles_complete_combined_with_rough = transform_coordinates.q_mult(q_glob_z,axisangle_to_q(rough_output)
         #print(len(pdb_matrices))
     #for j in range(0,len(pdb_matrices)):
         #print(len(pdb_matrices[j][0]))

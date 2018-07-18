@@ -36,10 +36,10 @@ def Main():
     parser.add_argument("-c","--rots_count", help = "Count of rotations equaly distributed on sphere", type=int, default=1000)
     parser.add_argument("-z","--rots_count_z", help = "Count of rotations around z axis", type=int, default = 20)
     parser.add_argument("-b","--best_fits_count", help = "Count of rotations in every iteration", type=int, default=20)
-    parser.add_argument("-r","--refine", help="If set the refinement is done",action="store_true")
-    parser.add_argument("--ref_angle", help="Angle for refinement",type=float,default=None)
-    parser.add_argument("--ref_docker_rough_output", help="Output file for rough docking",type=str,default=None)
-    parser.add_argument("--ref_line_num", help="line num from docker_rough_output", type=int,default=None)
+    parser.add_argument("-r","--autorefine", help="If set the automaticrefinement is done",action="store_true")
+    parser.add_argument("--rots_num_to_refine", help="How much best rots from coarse grain docking will be refined",type=int, default=5)
+    parser.add_argument("--rots_count_ref_glob", help="Global rots for refinement",type=int,default=10)
+    parser.add_argument("--rots_count_z_ref", help="Z rotations for refinement", type=int,default=5)
     parser.add_argument("-o","--corner_background", help="size of squares from all 4 corners that will be set as background", \
                         type=int,default=5)
     parser.add_argument("-u","--up_down_step_move", help="If set, the pdb image will be scaled and not moved up or down", \
@@ -56,7 +56,7 @@ def Main():
 
     args = parser.parse_args()
     get_results = CompareAndOutput(args.pdb_files, args.bcr_files, args.rots_count, args.rots_count_z, args.best_fits_count, \
-                  args.project_name, args.ref_angle, args.ref_docker_rough_output, args.ref_line_num, \
+                  args.project_name, args.autorefine, args.rots_num_to_refine, args.rots_count_ref_glob, args.rots_count_z_ref\
                   args.corner_background, args.up_down_step_move, args.scale,args.refine, args.rmsd, args.gauss, args.boxcar)
     #print(type(args.gauss))
     #print(args.gauss)

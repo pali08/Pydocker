@@ -1,5 +1,6 @@
 import random
 import numpy as np
+import transform_coordinates
 from transform_coordinates import rotate
 from read_pdb import read_pdb
 import random
@@ -159,7 +160,7 @@ class CreateRotsRefine(CreateRots):
         self.reg_axes = np.array(self.rot_axes)
         return()
     def create_rots_for_refinement(self):
-        selfTrotate_to_rough_output()
+        self.rotate_to_rough_output()
         self.list_of_all_rots_ref = []
         self.list_of_all_axisangles_ref = []
         for k in range(0,len(self.coor_lists_new)):
@@ -220,4 +221,9 @@ def rotate_around_z(rots_count, matrix, rots_count_for_refinement=None):
         angle_z_list.append(rot_angles[i]*(np.pi/180))
     #print(len(new_pdb_mat_z_list))
     return(new_pdb_mat_z_list, angle_z_list)
+
+def combine_two_axisangles(axisangle_1, axisangle_2)
+    q_1 = transform_coordinates.axisangle_to_q(axisangle_1[3],[axisangle_1[0],axisangle_1[1],axisangle_1[2]])
+    q_2 = transform_coordinates.axisangle_to_q(axisangle_2[3],[axisangle_2[0],axisangle_2[1],axisangle_2[2]])
+    return(q_to_axisangle(transform_coordinates.q_mult(q_2,q_1)))
 
