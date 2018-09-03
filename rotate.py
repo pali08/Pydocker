@@ -9,7 +9,7 @@ from read_bcr_python import read_bcr_bin
 import transform_coordinates
 import math
 import sys
-from surface3d_demo2 import surface
+#from surface3d_demo2 import surface
 import linecache
 import operator
 import cv2
@@ -222,7 +222,7 @@ def rotate_around_z(rots_count, matrix, rots_count_for_refinement=None):
     #print(len(new_pdb_mat_z_list))
     return(new_pdb_mat_z_list, angle_z_list)
 
-def combine_two_axisangles(axisangle_1, axisangle_2)
+def combine_two_axisangles(axisangle_1, axisangle_2):
     q_1 = transform_coordinates.axisangle_to_q(axisangle_1[3],[axisangle_1[0],axisangle_1[1],axisangle_1[2]])
     q_2 = transform_coordinates.axisangle_to_q(axisangle_2[3],[axisangle_2[0],axisangle_2[1],axisangle_2[2]])
     return(q_to_axisangle(transform_coordinates.q_mult(q_2,q_1)))

@@ -56,7 +56,7 @@ def Main():
 
     args = parser.parse_args()
     get_results = CompareAndOutput(args.pdb_files, args.bcr_files, args.rots_count, args.rots_count_z, args.best_fits_count, \
-                  args.project_name, args.autorefine, args.rots_num_to_refine, args.rots_count_ref_glob, args.rots_count_z_ref\
+                  args.project_name, args.autorefine, args.rots_num_to_refine, args.rots_count_ref_glob, args.rots_count_z_ref, \
                   args.corner_background, args.up_down_step_move, args.scale,args.refine, args.rmsd, args.gauss, args.boxcar)
     #print(type(args.gauss))
     #print(args.gauss)

@@ -61,8 +61,6 @@ class CompareAndOutput(object):
         folder = create_folders_object.create_folder()
     
         axisangles, cor_sums, diff_matrices, aligned_pdb_matrices, angles_z, axisangles_complete = align_matrices(coor_list, bcr_header, bcr_array, self.rots_count, self.rots_count_around_z, \
-                                                                                             rough_output_list=None, \
-                                                                                             self.how_much_best_rots, self.glob_rots_refine, self.z_rots_refine, \
                                                                                              self.up_down_steps_count, self.corner_background, self.scale, \
                                                                                              self.rmsd, self.gauss_sigma, self.boxcar_size)
         
@@ -79,12 +77,13 @@ class CompareAndOutput(object):
             axisangles_ref, cor_sums_ref, diff_matrices_ref, aligned_pdb_matrices_ref, angles_z_ref, axisangles_complete_ref = align_matrices(coor_list, bcr_header, bcr_array, \
                                                                                                                                               self.rots_count, self.rots_count_around_z, \
                                                                                                                                               axisangles_complete_for_ref, \
-                                                                                                                                              self.how_much_best_rots, \
-                                                                                                                                              self.glob_rots_ref, \
-                                                                                                                                              self.z_rots_refine, \
                                                                                                                                               self.up_down_steps_count, self.corner_background, \
                                                                                                                                               self.scale, \
-                                                                                                                                              self.rmsd, self.gauss_sigma, self.boxcar_size)
+                                                                                                                                              self.rmsd, self.gauss_sigma, self.boxcar_size, \
+                                                                                                                                              rough_output_list, \
+                                                                                                                                              self.how_much_best_rots, \
+                                                                                                                                              self.glob_rots_ref, \
+                                                                                                                                              self.z_rots_refine)
             for m in range(0, len(axisangles_complete_ref)):
                  axisangles_combined_with_rough.append(combine_two_axisangles(axisangles_complete[rough_outputs_sorted[m]], axisangles_complete_ref[m]))
             axisangles.extend(axisangles_ref)

@@ -4,7 +4,7 @@ import os
 from read_bcr_python import read_bcr_bin
 from pdb_bins import pdb_rots_to_bins
 from draw_plot import draw_points
-from drw_plt_tstng import draw_points_test
+#from drw_plt_tstng import draw_points_test
 import cv2
 import sys
 from scipy import ndimage
@@ -40,12 +40,12 @@ def opencv_align(bcr_array,pdb_array):
     return(min_val,top_left)
 
 def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_around_z, \
+                   up_down_steps_count, \
+                   cb, scale,rmsd ,gauss, boxcar_size, # cb is corner background \ 
                    docker_rough_output_list=None, \
                    how_much_best_rots=None, \
-                   glob_rots_refine=None, z_rots_refine=None,up_down_steps_count, \
-                   cb, scale,rmsd ,gauss, boxcar_size): # cb is corner background
-
-    def autorefine(first_x_structures, glob_rot_ref, z_rot_ref)
+                   glob_rots_refine=None, z_rots_refine=None):
+    def autorefine(first_x_structures, glob_rot_ref, z_rot_ref):
         cap_surface = 4*np.pi/rots_count
         angle_ref_glob = 1-(cap_surface/(2*np.pi))
         angle_ref_z = 2*np.pi / rots_count_z
@@ -121,7 +121,7 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
                                         int(gauss_1-1): pdb_array_shape[1]+gauss_1-1] = pdb_array
             pdb_array=cv2.GaussianBlur(pdb_array_with_surroundings,ksize=(gauss_1,gauss_1),sigmaX=gauss[0],sigmaY=0,borderType=cv2.BORDER_CONSTANT)
             #cropp
-            draw_points_test(pdb_array,"{}_gauss".format(str(k)))
+            #draw_points_test(pdb_array,"{}_gauss".format(str(k)))
             #mask = pdb_array > 0.0001 # for zeroes true, for non zeroes false
             #pdb_array = pdb_array[np.ix_(mask.any(1),mask.any(0))]
         elif(boxcar_size is not None):
@@ -130,7 +130,7 @@ def align_matrices(coor_list, bcr_header, bcr_array, rots_count, rots_count_arou
                                         int(boxcar_size-1): pdb_array_shape[1]+boxcar_size-1] = pdb_array
             #pdb_array = ndimage.uniform_filter(pdb_array_with_surroundings, boxcar_size)
             pdb_array = cv2.boxFilter(pdb_array_with_surroundings,ksize=(boxcar_size,boxcar_size),borderType=cv2.BORDER_CONSTANT, ddepth=-1)
-            draw_points_test(pdb_array,"{}_poboxcar".format(str(k)))
+            #draw_points_test(pdb_array,"{}_poboxcar".format(str(k)))
             #cropp
 
         pdb_array_shape = pdb_array.shape

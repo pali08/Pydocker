@@ -153,8 +153,7 @@ def pdb_rots_to_bins(coor_list, bcr_header, rots_count, rots_count_around_z, aut
             q_glob_z = transform_coordinates.q_mult(q_z,q_global)
             axisangles_complete.append(q_to_axisangle(g_glob_z))
             if(autorefine is True):
-                
-                axisangles_complete_combined_with_rough = transform_coordinates.q_mult(q_glob_z,axisangle_to_q(rough_output)
+                axisangles_complete_combined_with_rough = transform_coordinates.q_mult(q_glob_z,axisangle_to_q(rough_output))
         #print(len(pdb_matrices))
     #for j in range(0,len(pdb_matrices)):
         #print(len(pdb_matrices[j][0]))
