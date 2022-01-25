@@ -1,2 +1,2 @@
 # Pydocker
-Documentation currently under construction. For info about program, please contact author: p.mikulaj(at)gmail.com
+This set of scripts was created as the practical part of my bachelor thesis. For documentation and information about usage, please see https://is.muni.cz/th/s3j9o/bakalarska_prace_pavol_mikulaj.pdf
